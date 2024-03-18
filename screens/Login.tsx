@@ -12,6 +12,12 @@ import {Image} from 'react-native-animatable';
 const Login = ({navigation}) => {
   return (
     <View style={styles.mainContainer}>
+      <View style={styles.titleImagecontainer}>
+        <Image
+          style={styles.imageLogo}
+          source={require('../assets/images/logoeremovebg.png')}
+        />
+      </View>
       <View style={styles.signupContainer}>
         <View>
           <Text style={styles.signupText}>Login</Text>
@@ -41,9 +47,14 @@ const Login = ({navigation}) => {
         <View style={styles.lines}></View>
       </View>
       <View style={styles.imagesContainer}>
-        <Image style={styles.image} source={require('../assets/images/googleIcon.webp')} />
-        <Image style={styles.image} source={require('../assets/images/facebook.webp')} />
-      
+        <Image
+          style={styles.image}
+          source={require('../assets/images/googleIcon.webp')}
+        />
+        <Image
+          style={styles.image}
+          source={require('../assets/images/facebook.webp')}
+        />
       </View>
     </View>
   );
@@ -56,7 +67,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'column',
     height: ScreenHeight,
-    gap: 50,
+    gap: 30,
   },
   signupContainer: {
     display: 'flex',
@@ -137,16 +148,34 @@ const styles = StyleSheet.create({
     color: 'black',
     fontWeight: '400',
   },
-  image:{
-    width:40,
-    height:40,
+  image: {
+    width: 40,
+    height: 40,
   },
-  imagesContainer:{
+  imagesContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 30,
+  },
+  imageLogo:{
+    width:270,
+    height:150,
+  },
+  titleImagecontainer:{
     display:'flex',
-    flexDirection:'row',
-    alignItems:'center',
     justifyContent:'center',
-    gap:30,
+    alignItems:'center',
+    flexDirection:'column',
+    gap:0,
+  },
+  welcomeText:{
+    color:'black',
+    fontWeight:'500',
+    fontSize:15,
+    margin:0,
+    padding:0,
   }
 });
 export default Login;
