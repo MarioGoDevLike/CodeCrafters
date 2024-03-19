@@ -1,7 +1,31 @@
-import {View, Text, StyleSheet, TextInput, Pressable, Dimensions} from 'react-native';
-import React from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  Pressable,
+  Dimensions,
+} from 'react-native';
+import React, {useState} from 'react';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../config/firebase';
 
-const Signup = ({ navigation }) => {
+const Signup = ({navigation}) => {
+  const [email, setEmail] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = async () => {
+    if(email && password){
+      try{
+        await createUserWithEmailAndPassword(auth, email, password);
+        navigation.navigate('Login');
+      }catch(err){
+        console.log('got error: ', err.message);
+      }
+    }
+  };
+
   return (
     <View style={styles.mainContainer}>
       <View style={styles.signupContainer}>
@@ -10,21 +34,33 @@ const Signup = ({ navigation }) => {
         </View>
         <View style={styles.inputContainer}>
           <Text style={styles.textInputTitle}>Email</Text>
-          <TextInput style={styles.defaultTextInput} />
+          <TextInput
+            value={email}
+            onChangeText={value => setEmail(value)}
+            style={styles.defaultTextInput}
+          />
         </View>
         <View style={styles.inputContainer}>
           <Text style={styles.textInputTitle}>Phone Number</Text>
-          <TextInput style={styles.defaultTextInput} />
+          <TextInput
+            value={phoneNumber}
+            onChangeText={value => setPhoneNumber(value)}
+            style={styles.defaultTextInput}
+          />
         </View>
         <View style={styles.inputContainer}>
           <Text style={styles.textInputTitle}>Password</Text>
-          <TextInput style={styles.defaultTextInput} />
+          <TextInput
+            value={password}
+            onChangeText={value => setPassword(value)}
+            style={styles.defaultTextInput}
+          />
         </View>
         <View style={styles.inputContainer}>
           <Text style={styles.textInputTitle}>Confirm Password</Text>
           <TextInput style={styles.defaultTextInput} />
         </View>
-        <Pressable style={styles.button}>
+        <Pressable onPress={handleSubmit} style={styles.button}>
           <Text style={styles.buttonText}>Sign Up</Text>
         </Pressable>
         <View style={styles.Tcontainer}>
@@ -44,8 +80,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'column',
-    height:ScreenHeight,
-    
+    height: ScreenHeight,
   },
   signupContainer: {
     display: 'flex',
@@ -54,20 +89,21 @@ const styles = StyleSheet.create({
     gap: 20,
     padding: 20,
     borderRadius: 20,
-    shadowColor:"#24786D",
-    shadowOffset:{
-        height:6,
-        width:6,
+    shadowColor: '#24786D',
+    shadowOffset: {
+      height: 6,
+      width: 6,
     },
-    
-    shadowOpacity:0.6,
-    shadowRadius:4,
-    elevation:10,
+
+    shadowOpacity: 0.6,
+    shadowRadius: 4,
+    elevation: 10,
   },
   defaultTextInput: {
     backgroundColor: 'white',
     borderRadius: 20,
     width: 300,
+    paddingLeft:12,
   },
   textInputTitle: {
     color: '#24786D',
@@ -84,6 +120,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 25,
     marginLeft: 15,
+    fontFamily: 'MarkaziText-Bold',
   },
   button: {
     backgroundColor: '#24786D',
@@ -98,17 +135,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 25,
   },
-  Tcontainer:{
+  Tcontainer: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    flexDirection:'row',
-    gap:5,
+    flexDirection: 'row',
+    gap: 5,
   },
-  pressableText:{
-    color:'black',
-    fontSize:15,
-    fontWeight:'500',
-  }
+  pressableText: {
+    color: 'black',
+    fontSize: 15,
+    fontWeight: '500',
+  },
 });
 export default Signup;

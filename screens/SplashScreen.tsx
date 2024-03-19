@@ -5,7 +5,7 @@ import * as Animatable from 'react-native-animatable'
 const SplashScreen = ({ navigation }) => {
     useEffect(() => {
         setTimeout(() => {
-            navigation.navigate('Home');
+            navigation.navigate('Welcome');
         }, 2000)
     }, [])
   return (

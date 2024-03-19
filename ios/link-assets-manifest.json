@@ -1,0 +1,21 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/MarkaziText-Bold.ttf",
+      "sha1": "ac8ecdd41e9f3f9cfc624e1c482d507e3806ce99"
+    },
+    {
+      "path": "assets/fonts/MarkaziText-Medium.ttf",
+      "sha1": "44d0af16576985fc4f14fca34192e9b0bee61663"
+    },
+    {
+      "path": "assets/fonts/MarkaziText-Regular.ttf",
+      "sha1": "c73edd6d1e20c62ccae5ee980b441adefd2db767"
+    },
+    {
+      "path": "assets/fonts/MarkaziText-SemiBold.ttf",
+      "sha1": "95c1ae7ae00233166f872728cbcd73cb8198acdb"
+    }
+  ]
+}

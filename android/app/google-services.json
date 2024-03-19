@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "772567513029",
+    "project_id": "codecrafters-f7606",
+    "storage_bucket": "codecrafters-f7606.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:772567513029:android:752bda6f8146a183583dac",
+        "android_client_info": {
+          "package_name": "com.codecrafters"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "772567513029-p95s17uc1qolhg04ms3j15hd4h6gjd0j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.codecrafters",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "772567513029-v7spd6hdfu1aee6vgbmq6625j6ep3ogv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDK5e4HY1UINJUEcA4jAA9oXE2TxfFMppg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "772567513029-v7spd6hdfu1aee6vgbmq6625j6ep3ogv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
