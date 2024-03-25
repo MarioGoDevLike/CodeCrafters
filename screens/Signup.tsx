@@ -7,20 +7,45 @@ import {
   Dimensions,
 } from 'react-native';
 import React, {useState} from 'react';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../config/firebase';
+import {createUserWithEmailAndPassword} from 'firebase/auth';
+import {auth} from '../config/firebase';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import Loader from '../components/Loader';
 
 const Signup = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
+  const [Confirmpassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [Loading, setLoading] = useState(false);
+  const [errPassword, setErrPassword] = useState('');
+  const [errEmail, setErrEmail] = useState('');
+
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+  const toggleShowConfirmPassword = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
 
   const handleSubmit = async () => {
-    if(email && password){
-      try{
+    setLoading(true);
+    if (password != Confirmpassword) {
+      setLoading(false);
+      setErrPassword("Passwords doesn't match");
+      console.log('make sure Password and confirm password are similar!');
+    } else if (email && password) {
+      try {
         await createUserWithEmailAndPassword(auth, email, password);
+        setLoading(false);
         navigation.navigate('Login');
-      }catch(err){
+      } catch (err) {
+        setLoading(false);
+        if(err.message == 'Firebase: Error (auth/email-already-in-use).'){
+          setErrEmail('Email already in use.');
+        }
         console.log('got error: ', err.message);
       }
     }
@@ -39,6 +64,11 @@ const Signup = ({navigation}) => {
             onChangeText={value => setEmail(value)}
             style={styles.defaultTextInput}
           />
+          {errEmail ? (
+            <View>
+              <Text style={styles.errText}>{errEmail}</Text>
+            </View>
+          ) : null}
         </View>
         <View style={styles.inputContainer}>
           <Text style={styles.textInputTitle}>Phone Number</Text>
@@ -50,31 +80,92 @@ const Signup = ({navigation}) => {
         </View>
         <View style={styles.inputContainer}>
           <Text style={styles.textInputTitle}>Password</Text>
-          <TextInput
-            value={password}
-            onChangeText={value => setPassword(value)}
-            style={styles.defaultTextInput}
-          />
+
+          <View style={styles.passwordContainer}>
+            <TextInput
+              secureTextEntry={!showPassword}
+              value={password}
+              onChangeText={value => setPassword(value)}
+              style={styles.input}
+            />
+            <Icon.Button
+              name={showPassword ? 'eye-slash' : 'eye'}
+              size={20}
+              color="gray"
+              backgroundColor="white"
+              onPress={toggleShowPassword}
+            />
+          </View>
+          {errPassword ? (
+            <View>
+              <Text style={styles.errText}>{errPassword}</Text>
+            </View>
+          ) : null}
         </View>
         <View style={styles.inputContainer}>
           <Text style={styles.textInputTitle}>Confirm Password</Text>
-          <TextInput style={styles.defaultTextInput} />
+          <View style={styles.passwordContainer}>
+            <TextInput
+              secureTextEntry={!showConfirmPassword}
+              value={Confirmpassword}
+              onChangeText={value => setConfirmPassword(value)}
+              style={styles.input}
+            />
+            <Icon.Button
+              name={showConfirmPassword ? 'eye-slash' : 'eye'}
+              size={20}
+              color="gray"
+              backgroundColor="white"
+              onPress={toggleShowConfirmPassword}
+            />
+          </View>
+          {errPassword ? (
+            <View>
+              <Text style={styles.errText}>{errPassword}</Text>
+            </View>
+          ) : null}
         </View>
         <Pressable onPress={handleSubmit} style={styles.button}>
-          <Text style={styles.buttonText}>Sign Up</Text>
+          <Text style={styles.buttonText}>Create Account</Text>
         </Pressable>
         <View style={styles.Tcontainer}>
-          <Text>Existing Account?</Text>
+          <Text style={styles.existText}>Existing Account?</Text>
           <Pressable onPress={() => navigation.navigate('Login')}>
             <Text style={styles.pressableText}>Login</Text>
           </Pressable>
         </View>
       </View>
+      {Loading ? <Loader /> : null}
     </View>
   );
 };
 const ScreenHeight = Dimensions.get('window').height;
 const styles = StyleSheet.create({
+  errText: {
+    fontSize: 10,
+    color: '#FF3333',
+  },
+
+  textStyle: {
+    color: 'gray',
+  },
+  existText: {
+    color: 'gray',
+    fontSize: 10,
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'white',
+    borderRadius: 12,
+    paddingHorizontal: 10,
+  },
+  input: {
+    flex: 1,
+    color: 'black',
+    borderRadius: 12,
+  },
   mainContainer: {
     display: 'flex',
     alignItems: 'center',
@@ -101,14 +192,15 @@ const styles = StyleSheet.create({
   },
   defaultTextInput: {
     backgroundColor: 'white',
-    borderRadius: 20,
+    borderRadius: 12,
     width: 300,
-    paddingLeft:12,
+    color: 'black',
+    paddingLeft: 12,
   },
   textInputTitle: {
     color: '#24786D',
     fontWeight: 'bold',
-    fontSize: 12,
+    fontSize: 9,
     marginLeft: 15,
   },
   inputContainer: {
@@ -118,7 +210,7 @@ const styles = StyleSheet.create({
   signupText: {
     color: 'black',
     fontWeight: 'bold',
-    fontSize: 25,
+    fontSize: 20,
     marginLeft: 15,
     fontFamily: 'MarkaziText-Bold',
   },
@@ -133,7 +225,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontWeight: 'bold',
-    fontSize: 25,
+    fontSize: 15,
   },
   Tcontainer: {
     display: 'flex',
@@ -144,7 +236,7 @@ const styles = StyleSheet.create({
   },
   pressableText: {
     color: 'black',
-    fontSize: 15,
+    fontSize: 13,
     fontWeight: '500',
   },
 });

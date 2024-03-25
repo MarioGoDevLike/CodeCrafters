@@ -49,19 +49,19 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    gap: 50,
+    gap: 40,
     height: screenHeight,
     marginLeft: 20,
   },
   titleText: {
-    fontSize: 70,
+    fontSize: 50,
     color: 'white',
     fontWeight: '400',
   },
   titleParagraph: {
     color: '#B9C1BE',
     lineHeight: 27,
-    fontSize: 21,
+    fontSize: 18,
     width: 300,
     fontFamily:'MarkaziText-Regular',
 
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: 'black',
-    fontSize: 17,
+    fontSize: 15,
   },
   button: {
     alignItems: 'center',
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
   existing: {
     color: '#B9C1BE',
     fontFamily:'MarkaziText-Medium',
-    fontSize:17,
+    fontSize:15,
 
   },
   Tcontainer: {
@@ -109,8 +109,7 @@ const styles = StyleSheet.create({
   },
   pressableText:{
     color:'white',
-    fontWeight:'bold',
-    fontSize:14,
+    fontSize:16,
     fontFamily:'MarkaziText-Bold',
 
   }
