@@ -6,7 +6,7 @@ import {
   Pressable,
   Dimensions,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Image} from 'react-native-animatable';
 import {signInWithCredential, signInWithEmailAndPassword} from 'firebase/auth';
 import useAuth from '../hooks/useAuth';
@@ -20,6 +20,9 @@ import {
 } from '@react-native-google-signin/google-signin';
 import {FacebookAuthProvider, GoogleAuthProvider} from 'firebase/auth/cordova';
 import Loader from '../components/Loader';
+import {firebase} from '@react-native-firebase/firestore';
+import CheckBox from 'react-native-check-box';
+import { getCheckStatus, getUserEmail, storeCheckStatus, storeUserEmail } from '../components/RememberMe';
 
 GoogleSignin.configure({
   webClientId:
@@ -27,10 +30,34 @@ GoogleSignin.configure({
 });
 const Login = ({navigation}) => {
   const [email, setEmail] = useState('');
+  const [emailLoaded, setEmailLoaded] = useState(false);
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [Loading, setLoading] = useState(false);
   const [err, setErr] = useState('');
+  const todoRef = firebase.firestore().collection('usersInfo');
+  const [rememberMe, setRememberme] = useState(false);
+
+
+  useEffect(() => {
+    const fetchValuesFormStorage = async () => {
+      try {
+        const {emailValue} = await getUserEmail();
+        const {checkValue} = await getCheckStatus();
+        console.log('got status value:', checkValue);
+        console.log('got email value:', emailValue);
+        setRememberme(checkValue);
+        setEmail(emailValue);
+        setEmailLoaded(true);
+        if (!checkValue) {
+          clearUserEmail();
+        }
+      } catch (error) {
+        console.error('Error fetching checkValue or email:', error);
+      }
+    };
+    fetchValuesFormStorage();
+  }, []);
 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
@@ -62,9 +89,14 @@ const Login = ({navigation}) => {
   };
 
   const _signInWithFacebook = async () => {
-    const credentials = await onFacebookButtonPress().then(() => {
+    const credentials = await onFacebookButtonPress().then(async () => {
       console.log('Signing in with Facebook');
-      navigation.navigate('HomeScreen');
+      const uid = auth.currentUser?.uid;
+      if ((await todoRef.doc(uid).get()).exists == true) {
+        navigation.navigate('HomeScreen');
+      } else {
+        navigation.navigate('SetupProfile');
+      }
     });
   };
 
@@ -77,8 +109,14 @@ const Login = ({navigation}) => {
       await signInWithCredential(auth, googleCredentials).catch(err =>
         console.log(err),
       );
-      setLoading(false);
-      navigation.navigate('HomeScreen');
+      const uid = auth.currentUser?.uid;
+      if ((await todoRef.doc(uid).get()).exists == true) {
+        setLoading(false);
+        navigation.navigate('HomeScreen');
+      } else {
+        setLoading(false);
+        navigation.navigate('SetupProfile');
+      }
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         setLoading(false);
@@ -96,18 +134,25 @@ const Login = ({navigation}) => {
 
   const handleLogin = async () => {
     setLoading(true);
-
+    storeUserEmail(email);
     if (email && password) {
       try {
         await signInWithEmailAndPassword(auth, email, password);
+        const uid = auth.currentUser?.uid;
         setLoading(false);
-        navigation.navigate('HomeScreen');
+        if ((await todoRef.doc(uid).get()).exists == true) {
+          navigation.navigate('HomeScreen');
+        } else {
+          navigation.navigate('SetupProfile');
+        }
       } catch (err) {
         setLoading(false);
         console.log('got error: ', err.message);
-        if(err.message == 'Firebase: Error (auth/invalid-email).'){
+        if (err.message == 'Firebase: Error (auth/invalid-email).') {
           setErr('Invalid email');
-        }else if(err.message == 'Firebase: Error (auth/invalid-credential).'){
+        } else if (
+          err.message == 'Firebase: Error (auth/invalid-credential).'
+        ) {
           setErr('Invalid password or email');
         }
       }
@@ -151,7 +196,23 @@ const Login = ({navigation}) => {
               onPress={toggleShowPassword}
             />
           </View>
-          {<View style={styles.errContainer}><Text style={styles.errText}>{err}</Text></View>}
+          {
+            <View style={styles.errContainer}>
+              <Text style={styles.errText}>{err}</Text>
+            </View>
+          }
+        </View>
+        <View style={styles.inputContainer}>
+          <CheckBox
+            checkedCheckBoxColor="#24786D"
+            style={{width: 150}}
+            isChecked={rememberMe}
+            onClick={async () => {
+              setRememberme(!rememberMe);
+              await storeCheckStatus(!rememberMe);
+            }}
+            rightText="Remember me"
+          />
         </View>
 
         <Pressable onPress={handleLogin} style={styles.button}>
@@ -191,17 +252,13 @@ const ScreenHeight = Dimensions.get('window').height;
 const styles = StyleSheet.create({
   textStyle: {
     color: 'gray',
-    fontSize:9,
-  },
-  errContainer:{
-  //   display:'flex',
-  //   alignItems:'center',
-  //   justifyContent:'center',
+    fontSize: 9,
   },
 
-  errText:{
-    fontSize:10,
-    color:'#FF3333',
+
+  errText: {
+    fontSize: 10,
+    color: '#FF3333',
   },
   passwordContainer: {
     flexDirection: 'row',
@@ -323,7 +380,7 @@ const styles = StyleSheet.create({
   },
   imageLogo: {
     width: 270,
-    height: 150,
+    height: 152,
   },
   titleImagecontainer: {
     display: 'flex',

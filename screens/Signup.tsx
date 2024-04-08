@@ -14,7 +14,6 @@ import Loader from '../components/Loader';
 
 const Signup = ({navigation}) => {
   const [email, setEmail] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [Confirmpassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -70,14 +69,7 @@ const Signup = ({navigation}) => {
             </View>
           ) : null}
         </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.textInputTitle}>Phone Number</Text>
-          <TextInput
-            value={phoneNumber}
-            onChangeText={value => setPhoneNumber(value)}
-            style={styles.defaultTextInput}
-          />
-        </View>
+        
         <View style={styles.inputContainer}>
           <Text style={styles.textInputTitle}>Password</Text>
 
