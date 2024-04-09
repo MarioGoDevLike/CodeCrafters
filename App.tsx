@@ -26,7 +26,7 @@ function App(): React.JSX.Element {
 
     return (
       <NavigationContainer>
-        <Stack.Navigator initialRouteName='SetupProfile' screenOptions={{headerShown:false}}>
+        <Stack.Navigator initialRouteName='Splash' screenOptions={{headerShown:false}}>
           <Stack.Screen name="Splash" component={SplashScreen} />
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
           <Stack.Screen name="Login" component={Login} />

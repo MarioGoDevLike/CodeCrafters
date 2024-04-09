@@ -9,6 +9,7 @@ const storeUserEmail = async email => {
   }
 };
 
+
 const getUserEmail = async () => {
   try {
     const emailValue = JSON.parse(await AsyncStorage.getItem('email'));
@@ -19,6 +20,7 @@ const getUserEmail = async () => {
     return null;
   }
 };
+
 
 const clearUserEmail = async () => {
   try {
@@ -55,4 +57,5 @@ export {
   getUserEmail,
   storeCheckStatus,
   storeUserEmail,
+
 };

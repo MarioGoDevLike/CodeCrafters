@@ -39,14 +39,14 @@ const HomeScreen = () => {
       }
       if(route.name == 'Post'){
         return <IconIon.Button
-        style={{backgroundColor: 'white', width:70}}
+        style={{backgroundColor: 'white'}}
         name={iconName}
         color={focused ? '#24786D' : '#e3e3e3'}
       />
       }
       return (
         <IconIon.Button
-          style={{backgroundColor: 'white', width:60,}}
+          style={{backgroundColor: 'white',justifyContent:'center', alignItems:'center', display:'flex'}}
           name={iconName}
           color={focused ? '#24786D' : '#d9d9d9'}
         />
@@ -55,11 +55,11 @@ const HomeScreen = () => {
   });
   return (
     <Home.Navigator screenOptions={screenOptions} >
-      <Home.Screen name="Feed" component={FeedScreen} />
-      <Home.Screen name="Message" component={MessageScreen} />
+      {/* <Home.Screen name="Feed" component={FeedScreen} />
+      <Home.Screen name="Message" component={MessageScreen} /> */}
       <Home.Screen name="Post" component={PostScreen} />
-      <Home.Screen name="Notification" component={NotificationScreen} />
-      <Home.Screen name="Profile" component={ProfileScreen} />
+      {/* <Home.Screen name="Notification" component={NotificationScreen} />
+      <Home.Screen name="Profile" component={ProfileScreen} /> */}
     </Home.Navigator>
   );
 };

@@ -22,7 +22,7 @@ import {FacebookAuthProvider, GoogleAuthProvider} from 'firebase/auth/cordova';
 import Loader from '../components/Loader';
 import {firebase} from '@react-native-firebase/firestore';
 import CheckBox from 'react-native-check-box';
-import { getCheckStatus, getUserEmail, storeCheckStatus, storeUserEmail } from '../components/RememberMe';
+import { getCheckStatus, getUserEmail, getUserUID, storeCheckStatus, storeUserEmail} from '../components/RememberMe';
 
 GoogleSignin.configure({
   webClientId:
@@ -44,8 +44,10 @@ const Login = ({navigation}) => {
       try {
         const {emailValue} = await getUserEmail();
         const {checkValue} = await getCheckStatus();
+
         console.log('got status value:', checkValue);
         console.log('got email value:', emailValue);
+        console.log('got email value:', userUID);
         setRememberme(checkValue);
         setEmail(emailValue);
         setEmailLoaded(true);
@@ -135,6 +137,7 @@ const Login = ({navigation}) => {
   const handleLogin = async () => {
     setLoading(true);
     storeUserEmail(email);
+    
     if (email && password) {
       try {
         await signInWithEmailAndPassword(auth, email, password);

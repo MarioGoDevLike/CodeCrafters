@@ -8,6 +8,7 @@ import {
   Alert,
   ScrollView,
   Button,
+  Platform,
 } from 'react-native';
 import React, {useState} from 'react';
 import {CountryPicker} from 'react-native-country-codes-picker';
@@ -16,16 +17,22 @@ import {Picker} from '@react-native-picker/picker';
 import CheckBox from 'react-native-check-box';
 import {firebase} from '@react-native-firebase/firestore';
 import Loader from '../components/Loader';
-import ImagePicker from 'react-native-image-picker';
-import {auth} from '../config/firebase';
+import * as ImagePicker from 'react-native-image-picker';
+
+import {auth, storage} from '../config/firebase';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {
   launchImageLibrary as _launchImageLibrary,
   launchCamera as _launchCamera,
 } from 'react-native-image-picker';
 import {Image} from 'react-native-animatable';
+import { app } from "../config/firebase";
+import { uploadBytesResumable, getDownloadURL, ref } from 'firebase/storage';
+import { addDoc, collection, onSnapshot } from 'firebase/firestore';
+
 
 const SetupProfile = ({navigation}) => {
+  const uid = auth.currentUser?.uid;
   const [show, setShow] = useState(false);
   const [selectedGender, setSelectedGender] = useState('');
   const [countryCode, setCountryCode] = useState('CC');
@@ -37,36 +44,8 @@ const SetupProfile = ({navigation}) => {
   const [data, setAddData] = useState('');
   const [Loading, setLoading] = useState(false);
   const [image, setImage] = useState(null);
-  const [uploading, setUploading] = useState(false);
+  const [userImage, setUserImage] = useState('');
 
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-    const source = { uri: result.uri };
-    console.log(source);
-    setImage(source);
-  };
-  const uploadImage = async () => {
-    setUploading(true);
-    console.log(pickImage);
-    const response = await fetch(image.uri);
-    const blob = await response.blob();
-    const filename = image.uri.substring(image.uri.lastIndexOf('/') + 1);
-    var ref = firebase.storage().ref().child(filename).put(blob);
-    try {
-      await ref;
-      setUploading(false);
-      Alert.alert('Photo uploaded!');
-      setImage(null);
-    } catch (e) {
-      console.log(e);
-      setUploading(false);
-    }
-  };
 
   let launchImageLibrary = _launchImageLibrary;
   const openImagePicker = () => {
@@ -79,7 +58,6 @@ const SetupProfile = ({navigation}) => {
 
     launchImageLibrary(options, handleResponse);
   };
-  ImagePicker;
 
   const handleResponse = response => {
     if (response.didCancel) {
@@ -88,17 +66,33 @@ const SetupProfile = ({navigation}) => {
       console.log('Image picker error: ', response.error);
     } else {
       let imageUri = response.uri || response.assets?.[0]?.uri;
-      console.log(imageUri);
-      setImage(imageUri);
+      uploadImage(imageUri, "image");
     }
   };
+  const uploadImage = async (uri, fileType) => {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    const storageRef = ref(storage, "images/"+ uid);
+    const uploadTask = uploadBytesResumable(storageRef, blob);
+    uploadTask.on("state_changed", (snapshot) => {
+
+    },(error)=>{
+
+    }, ()=>{
+      getDownloadURL(uploadTask.snapshot.ref).then(async(downloadURL) =>{
+        console.log("File available at ", downloadURL);
+        setUserImage(downloadURL);
+        setImage("");
+      })
+    })
+  }
 
   const todoRef = firebase.firestore().collection('usersInfo');
 
   const addData = async () => {
     const uid = auth.currentUser?.uid;
     setLoading(true);
-   
+
     console.log('checking inputs');
     if (
       phoneNumber &&
@@ -110,7 +104,6 @@ const SetupProfile = ({navigation}) => {
       // isCheckedTechnology &&
     ) {
       console.log('checking Image upload...');
-      await uploadImage();
       console.log('Uploaded Successfully!');
       console.log('check Success!');
       const timestamp = firebase.firestore.FieldValue.serverTimestamp();
@@ -152,7 +145,7 @@ const SetupProfile = ({navigation}) => {
         <View style={{flex: 1, justifyContent: 'center'}}>
           {image && (
             <Image
-              source={{uri: image}}
+              source={{uri : image}}
               style={{flex: 1}}
               resizeMode="contain"
             />
@@ -172,7 +165,7 @@ const SetupProfile = ({navigation}) => {
             </Pressable>
             <Image
               style={styles.profileImage}
-              source={require('../assets/images/emptyProfile.webp')}
+              source={userImage? {uri: userImage}: require('../assets/images/emptyProfile.webp')}
             />
           </View>
         </View>

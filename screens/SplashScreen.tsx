@@ -8,11 +8,14 @@ import {
 } from '../components/RememberMe';
 
 const SplashScreen = ({navigation}) => {
+  
   useEffect(() => {
     setTimeout(async () => {
       const {checkValue} = await getCheckStatus();
       if (checkValue) {
         navigation.navigate('HomeScreen');
+        // navigation.navigate('Welcome');
+
       } else {
         navigation.navigate('Welcome');
       }
