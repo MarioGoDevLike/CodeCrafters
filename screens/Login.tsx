@@ -13,7 +13,6 @@ import useAuth from '../hooks/useAuth';
 import {auth} from '../config/firebase';
 import {LoginManager, AccessToken} from 'react-native-fbsdk-next';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
 import {
   GoogleSignin,
   statusCodes,
@@ -22,12 +21,15 @@ import {FacebookAuthProvider, GoogleAuthProvider} from 'firebase/auth/cordova';
 import Loader from '../components/Loader';
 import {firebase} from '@react-native-firebase/firestore';
 import CheckBox from 'react-native-check-box';
-import { getCheckStatus, getUserEmail, getUserUID, storeCheckStatus, storeUserEmail} from '../components/RememberMe';
+import { getCheckStatus, getUserEmail, storeCheckStatus, storeUserEmail, storeUserPassword} from '../components/RememberMe';
+
+
 
 GoogleSignin.configure({
   webClientId:
     '772567513029-v7spd6hdfu1aee6vgbmq6625j6ep3ogv.apps.googleusercontent.com',
 });
+
 const Login = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [emailLoaded, setEmailLoaded] = useState(false);
@@ -44,10 +46,8 @@ const Login = ({navigation}) => {
       try {
         const {emailValue} = await getUserEmail();
         const {checkValue} = await getCheckStatus();
-
         console.log('got status value:', checkValue);
         console.log('got email value:', emailValue);
-        console.log('got email value:', userUID);
         setRememberme(checkValue);
         setEmail(emailValue);
         setEmailLoaded(true);
@@ -137,7 +137,7 @@ const Login = ({navigation}) => {
   const handleLogin = async () => {
     setLoading(true);
     storeUserEmail(email);
-    
+    storeUserPassword(password);
     if (email && password) {
       try {
         await signInWithEmailAndPassword(auth, email, password);
@@ -161,6 +161,8 @@ const Login = ({navigation}) => {
       }
     }
   };
+ 
+
 
   return (
     <View style={styles.mainContainer}>
@@ -401,3 +403,4 @@ const styles = StyleSheet.create({
   },
 });
 export default Login;
+

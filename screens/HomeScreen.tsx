@@ -9,63 +9,55 @@ import PostScreen from './PostScreen';
 import NotificationScreen from './NotificationScreen';
 import ProfileScreen from './ProfileScreen';
 import FeedScreen from './FeedScreen';
+import TabBar from '../components/TabBar';
 
 const HomeScreen = () => {
   const Home = createBottomTabNavigator();
 
-  const screenOptions = ({route}) => ({
-    tabBarStyle:{height:50},
-    tabBarIconStyle:styles.tabBarIcon,
-    tabBarShowLabel:false,  
+  const screenOptions = ({}) => ({
+    tabBarIconStyle: styles.tabBarIcon,
+    tabBarShowLabel: false,
     headerShown: false,
-    tabBarIcon: ({focused}) => {
-      let iconName = 'home';
-      switch (route.name) {
-        case 'Feed':
-          iconName = 'home-outline';
-          break;
-        case 'Message':
-          iconName = 'chatbubbles-outline';
-          break;
-        case 'Post':
-          iconName = 'add';
-          break;
-        case 'Notification':
-          iconName = 'notifications-outline';
-          break;
-        case 'Profile':
-          iconName = 'person-outline';
-          break;
-      }
-      if(route.name == 'Post'){
-        return <IconIon.Button
-        style={{backgroundColor: 'white'}}
-        name={iconName}
-        color={focused ? '#24786D' : '#e3e3e3'}
-      />
-      }
-      return (
-        <IconIon.Button
-          style={{backgroundColor: 'white',justifyContent:'center', alignItems:'center', display:'flex'}}
-          name={iconName}
-          color={focused ? '#24786D' : '#d9d9d9'}
-        />
-      );
-    },
   });
   return (
-    <Home.Navigator screenOptions={screenOptions} >
-      {/* <Home.Screen name="Feed" component={FeedScreen} />
-      <Home.Screen name="Message" component={MessageScreen} /> */}
-      <Home.Screen name="Post" component={PostScreen} />
-      {/* <Home.Screen name="Notification" component={NotificationScreen} />
-      <Home.Screen name="Profile" component={ProfileScreen} /> */}
+    <Home.Navigator
+      tabBar={props => <TabBar {...props} name={'add'} />}
+      screenOptions={screenOptions}>
+      <Home.Screen
+        name="Feed"
+        options={{
+          tabBarIconStyle: styles.tabBarIcon,
+          tabBarShowLabel: false,
+          headerShown: true,
+          headerTitleAlign:'center',
+        }}
+        component={FeedScreen}
+      />
+      <Home.Screen
+        name="Message"
+        options={screenOptions}
+        component={MessageScreen}
+      />
+      <Home.Screen name="Post" options={screenOptions} component={PostScreen} />
+      <Home.Screen
+        name="Notification"
+        options={screenOptions}
+        component={NotificationScreen}
+      />
+      <Home.Screen
+        name="Profile"
+        options={screenOptions}
+        component={ProfileScreen}
+      />
     </Home.Navigator>
   );
 };
 const styles = StyleSheet.create({
-  tabBarIcon:{
-    
+  tabBarIcon: {},
+  headerStyle:{
+    borderRadius:1,
+    borderWidth:2,
+    borderBottomColor:'black'
   }
 });
 

@@ -21,6 +21,27 @@ const getUserEmail = async () => {
   }
 };
 
+const storeUserPassword = async password => {
+  try {
+    await AsyncStorage.setItem('password', JSON.stringify(password));
+    console.log('password stored for remember me');
+  } catch (error) {
+    console.error('Error storing email for remembre me:', error);
+  }
+};
+
+
+const getUserPassword = async () => {
+  try {
+    const passwordValue = JSON.parse(await AsyncStorage.getItem('password'));
+    console.log('getting password for the remember me', passwordValue);
+    return passwordValue !== null ? {passwordValue} : {passwordValue: ''};
+  } catch (error) {
+    console.error('Error getting stored email fo rmemerme:', error);
+    return null;
+  }
+};
+
 
 const clearUserEmail = async () => {
   try {
@@ -57,5 +78,7 @@ export {
   getUserEmail,
   storeCheckStatus,
   storeUserEmail,
+  storeUserPassword,
+  getUserPassword,
 
 };
