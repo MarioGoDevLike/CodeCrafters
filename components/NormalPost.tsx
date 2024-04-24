@@ -1,17 +1,30 @@
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, Pressable} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {Image} from 'react-native-animatable';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import {getDownloadURL, ref} from 'firebase/storage';
 import {db, storage} from '../config/firebase';
 import {doc, getDoc} from 'firebase/firestore';
+import firestore from '@react-native-firebase/firestore';
+import {useAtom} from 'jotai';
+import {globalUid} from '../hooks/useAuth';
+import {formatDistanceToNow} from 'date-fns';
+import { useNavigation } from '@react-navigation/native';
 
 const NormalPost = ({post}) => {
+  const navigation = useNavigation();
+
   const [url, setUrl] = useState();
   const [urls, setUrls] = useState(true);
-
+  const [liked, setLiked] = useState(false);
+  const [globaluid, setUid] = useAtom(globalUid);
   const uid = post.userId;
   const [userInfo, setUserInfo] = useState<any | undefined>(null);
+
+  const likesCount = post.postLikes.length;
+  const timeAgo = formatDistanceToNow(new Date(post.postTime.toDate()), {
+    addSuffix: true,
+  });
 
   const fetchData = async () => {
     const docRef = doc(db, 'usersInfo', uid);
@@ -31,55 +44,77 @@ const NormalPost = ({post}) => {
     fetchData();
   }, []);
 
+  const likePost = () => {
+    const newLikes = liked
+      ? post.postLikes.filter(id => id !== globaluid)
+      : [...post.postLikes, globaluid];
+    setLiked(!liked);
+    firestore().collection('posts').doc(post.postId).update({
+      Likes: newLikes, 
+    });
+  };
+
+
   return (
     <View style={styles.mainContainer}>
       <View style={styles.userInfoContainer}>
-        <Image
-          style={styles.picStyle}
-          source={
-            url ? {uri: url} : require('../assets/images/emptyProfile.webp')
-          }
-        />
-        <Text
+        <View
           style={{
-            fontSize: 12,
-            fontFamily: 'MarkaziText-Medium',
-            color: '#2b2b2b',
-            fontWeight: '300',
-            paddingLeft: 5,
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
           }}>
-          {userInfo?.username}
-        </Text>
+          <Image
+            style={styles.picStyle}
+            source={
+              url ? {uri: url} : require('../assets/images/emptyProfile.webp')
+            }
+          />
+          <Text
+            style={{
+              fontSize: 10,
+              color: '#2b2b2b',
+              fontWeight: '400',
+              paddingLeft: 5,
+            }}>
+            {userInfo?.username}
+          </Text>
+        </View>
+        <View>
+          <Text style={{fontSize: 10, color: '#d3d3d3'}}>{timeAgo}</Text>
+        </View>
       </View>
       <View style={styles.postContain}>
-        <Text>{post.postText}</Text>
-        <Image
-          style={styles.postPic}
-          source={
-            post.postImage
-              ? {uri: post.postImage}
-              : require('../assets/images/emptyProfile.webp')
-          }
-        />
+        <Text style={{fontSize: 12, fontWeight: '300', color: '#424242'}}>
+          {post.postText}
+        </Text>
+        {post.postImage ? (
+          <Image style={styles.postPic} source={{uri: post.postImage}} />
+        ) : null}
       </View>
       <View style={styles.interactionContainer}>
-        <View style={styles.interaction}>
-          <IonIcon size={19} name="heart-outline" />
-          <Text>20</Text>
-        </View>
-        <View style={styles.interaction}>
-          <IonIcon size={19} name="chatbox-outline" />
-          <Text>20</Text>
-        </View>
+        <Pressable onPress={likePost}>
+          <View style={styles.interaction}>
+            <IonIcon size={25} name="heart-outline" />
+            <Text>{likesCount}</Text>
+          </View>
+        </Pressable>
+        <Pressable onPress={() => navigation.navigate('Comments', {postData: post, postId : post.postId, username:userInfo?.username, userPic: url ? {uri: url} : require('../assets/images/emptyProfile.webp'), postTime: timeAgo})}>
+          <View style={styles.interaction}>
+            <IonIcon size={25} name="chatbox-outline" />
+            <Text>20</Text>
+          </View>
+        </Pressable>
       </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  postContain:{
-    display:'flex',
-    gap:10,
+  postContain: {
+    display: 'flex',
+    gap: 10,
   },
   interaction: {
     display: 'flex',
@@ -89,7 +124,7 @@ const styles = StyleSheet.create({
   mainContainer: {
     marginTop: 10,
     padding: 10,
-    borderBottomWidth:1,
+    borderBottomWidth: 1,
     borderRadius: 10,
     borderColor: '#d3d3d3',
     width: 350,
@@ -104,12 +139,12 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     borderColor: '#fff',
     borderWidth: 2,
-    
   },
   userInfoContainer: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
   scrollContainer: {
     flexGrow: 1,
@@ -118,16 +153,15 @@ const styles = StyleSheet.create({
   postPic: {
     width: 330,
     height: 240,
-    borderRadius:10,
+    borderRadius: 10,
     resizeMode: 'stretch',
   },
   interactionContainer: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent:'space-between',
+    justifyContent: 'space-between',
     gap: 20,
-    padding:10,
-
+    padding: 10,
   },
 });
 

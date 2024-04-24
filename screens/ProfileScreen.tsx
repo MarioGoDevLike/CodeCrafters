@@ -29,6 +29,7 @@ const ProfileScreen = ({navigation}) => {
   const [expertise, setExpertise] = useState();
   const [role, setRole] = useState();
   const [gender, setGender] = useState();
+  // const {user, logout} = useAuth();
 
   const fetchData = async () => {
     const docRef = doc(db, 'usersInfo', uid);
@@ -69,13 +70,7 @@ const ProfileScreen = ({navigation}) => {
       });
   };
   const signOutUser = async () => {
-    try {
-      firebase.default.auth().signOut()
-      navigation.navigate('Login');
-      Alert.alert('You have been Signed out');
-    } catch (e) {
-      console.log(e);
-    }
+    // await logout();
   };
 
   return (

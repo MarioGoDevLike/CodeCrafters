@@ -19,24 +19,55 @@ import MessageScreen from './screens/MessageScreen';
 import PostScreen from './screens/PostScreen';
 import NotificationScreen from './screens/notificationScreen';
 import ProfileScreen from './screens/ProfileScreen';
+import Comments from './screens/Comments';
 
 function App(): React.JSX.Element {
   const {user} = useAuth();
   const Stack = createNativeStackNavigator();
 
-    return (
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName='Splash' screenOptions={{headerShown:false}}>
-          <Stack.Screen name="Splash" component={SplashScreen} />
-          <Stack.Screen name="Welcome" component={WelcomeScreen} />
-          <Stack.Screen name="Login" component={Login} />
-          <Stack.Screen name="Signup" component={Signup} />
-          <Stack.Screen name="HomeScreen" component={HomeScreen} />
-          <Stack.Screen name="SetupProfile" component={SetupProfile} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    );
-  }
-  
+  return (
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName="Splash"
+        screenOptions={({route}) => ({
+          headerTitleAlign:'center',
+          headerTintColor:'black',
+          headerShown: route.name === 'Comments',
+        })}>
+        <Stack.Screen name="Comments" component={Comments} />
+        <Stack.Screen
+          name="Splash"
+          component={SplashScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="Welcome"
+          component={WelcomeScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="Login"
+          component={Login}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="Signup"
+          component={Signup}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="HomeScreen"
+          component={HomeScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="SetupProfile"
+          component={SetupProfile}
+          options={{headerShown: false}}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
 
 export default App;

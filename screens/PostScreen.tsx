@@ -130,7 +130,7 @@ const PostScreen = () => {
     setLoading(true);
     if (title && postText && postType) {
       const timestamp = firebase.firestore.FieldValue.serverTimestamp();
-      const data = {
+      let data = {
         userId:uid,
         postId: postId,
         postTitle: title,
@@ -139,6 +139,18 @@ const PostScreen = () => {
         postImage: userImage,
         time: timestamp,
       };
+      if (normalPost) {
+        data = {
+          ...data,
+          Likes: '',
+        };
+      } else {
+        data = {
+          ...data,
+          upvote: '',
+          Downvote: '',
+        };
+      }
 
       todoRef
         .doc(postId)
