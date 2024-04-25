@@ -7,7 +7,7 @@
 
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import React from 'react';
+import React, { useEffect } from 'react';
 import SplashScreen from './screens/SplashScreen';
 import Login from './screens/Login';
 import Signup from './screens/Signup';
@@ -20,18 +20,38 @@ import PostScreen from './screens/PostScreen';
 import NotificationScreen from './screens/notificationScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import Comments from './screens/Comments';
+import messaging from '@react-native-firebase/messaging';
 
 function App(): React.JSX.Element {
   const {user} = useAuth();
+  
   const Stack = createNativeStackNavigator();
+  async function requestUserPermission() {
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
+    if (enabled) {
+      console.log('Authorization status:', authStatus);
+    }
+  }
+  const getToken = async() =>{
+    const token = await messaging().getToken()
+    console.log("Token", token);
+  }
+
+  useEffect(()=>{
+    requestUserPermission()
+    getToken()
+  },[])
   return (
     <NavigationContainer>
       <Stack.Navigator
         initialRouteName="Splash"
         screenOptions={({route}) => ({
-          headerTitleAlign:'center',
-          headerTintColor:'black',
+          headerTitleAlign: 'center',
+          headerTintColor: 'black',
           headerShown: route.name === 'Comments',
         })}>
         <Stack.Screen name="Comments" component={Comments} />

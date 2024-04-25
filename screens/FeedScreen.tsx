@@ -26,6 +26,8 @@ const FeedScreen = () => {
             const postUpVote = doc.data().upvote;
             const postDownVote = doc.data().Downvote;
             const postTime = doc.data().time;
+            const postComments = doc.data().Comments;
+0
 
             posts.push({
               postId,
@@ -37,6 +39,7 @@ const FeedScreen = () => {
               postUpVote,
               postDownVote,
               postTime,
+              postComments
             });
           });
           setPosts(posts);

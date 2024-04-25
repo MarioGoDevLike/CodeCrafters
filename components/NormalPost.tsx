@@ -15,7 +15,6 @@ const NormalPost = ({post}) => {
   const navigation = useNavigation();
 
   const [url, setUrl] = useState();
-  const [urls, setUrls] = useState(true);
   const [liked, setLiked] = useState(false);
   const [globaluid, setUid] = useAtom(globalUid);
   const uid = post.userId;
@@ -103,7 +102,7 @@ const NormalPost = ({post}) => {
         <Pressable onPress={() => navigation.navigate('Comments', {postData: post, postId : post.postId, username:userInfo?.username, userPic: url ? {uri: url} : require('../assets/images/emptyProfile.webp'), postTime: timeAgo})}>
           <View style={styles.interaction}>
             <IonIcon size={25} name="chatbox-outline" />
-            <Text>20</Text>
+            <Text>{post.postComments}</Text>
           </View>
         </Pressable>
       </View>
