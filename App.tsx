@@ -21,10 +21,12 @@ import NotificationScreen from './screens/notificationScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import Comments from './screens/Comments';
 import messaging from '@react-native-firebase/messaging';
+import { ChatContextProvider } from './config/chatContext';
+import Chat from './components/Chat';
 
 function App(): React.JSX.Element {
-  const {user} = useAuth();
-  
+  const { user } = useAuth();
+
   const Stack = createNativeStackNavigator();
   async function requestUserPermission() {
     const authStatus = await messaging().requestPermission();
@@ -36,57 +38,65 @@ function App(): React.JSX.Element {
       console.log('Authorization status:', authStatus);
     }
   }
-  const getToken = async() =>{
-    const token = await messaging().getToken()
+  const getToken = async () => {
+    const token = await messaging().getToken();
     console.log("Token", token);
   }
 
-  useEffect(()=>{
-    requestUserPermission()
-    getToken()
-  },[])
+  useEffect(() => {
+    requestUserPermission();
+    getToken();
+  }, []);
+
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Splash"
-        screenOptions={({route}) => ({
-          headerTitleAlign: 'center',
-          headerTintColor: 'black',
-          headerShown: route.name === 'Comments',
-        })}>
-        <Stack.Screen name="Comments" component={Comments} />
-        <Stack.Screen
-          name="Splash"
-          component={SplashScreen}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="Welcome"
-          component={WelcomeScreen}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="Login"
-          component={Login}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="Signup"
-          component={Signup}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="HomeScreen"
-          component={HomeScreen}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="SetupProfile"
-          component={SetupProfile}
-          options={{headerShown: false}}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <ChatContextProvider>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="Splash"
+          screenOptions={({ route }) => ({
+            headerTitleAlign: 'center',
+            headerTintColor: 'black',
+            headerShown: route.name === 'Comments',
+          })}>
+          <Stack.Screen name="Comments" component={Comments} />
+          <Stack.Screen
+            name="Splash"
+            component={SplashScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Welcome"
+            component={WelcomeScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Login"
+            component={Login}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Signup"
+            component={Signup}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="HomeScreen"
+            component={HomeScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="SetupProfile"
+            component={SetupProfile}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Chat"
+            component={Chat}
+            options={{ headerShown: false }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </ChatContextProvider>
   );
 }
 

@@ -38,6 +38,7 @@ const Signup = ({navigation}) => {
     } else if (email && password) {
       try {
         await createUserWithEmailAndPassword(auth, email, password);
+
         setLoading(false);
         navigation.navigate('Login');
       } catch (err) {

@@ -19,17 +19,17 @@ import {firebase} from '@react-native-firebase/firestore';
 import Loader from '../components/Loader';
 import * as ImagePicker from 'react-native-image-picker';
 
-import {auth, storage} from '../config/firebase';
+import {auth, db, storage} from '../config/firebase';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {
   launchImageLibrary as _launchImageLibrary,
   launchCamera as _launchCamera,
 } from 'react-native-image-picker';
 import {Image} from 'react-native-animatable';
-import { app } from "../config/firebase";
-import { uploadBytesResumable, getDownloadURL, ref } from 'firebase/storage';
-import { addDoc, collection, onSnapshot } from 'firebase/firestore';
-
+import {uploadBytesResumable, getDownloadURL, ref} from 'firebase/storage';
+import { doc, setDoc} from 'firebase/firestore';
+import messaging from '@react-native-firebase/messaging';
+import { getMessaging } from 'firebase/messaging';
 
 const SetupProfile = ({navigation}) => {
   const uid = auth.currentUser?.uid;
@@ -46,7 +46,6 @@ const SetupProfile = ({navigation}) => {
   const [image, setImage] = useState(null);
   const [userImage, setUserImage] = useState('');
 
-
   let launchImageLibrary = _launchImageLibrary;
   const openImagePicker = () => {
     const options = {
@@ -58,7 +57,7 @@ const SetupProfile = ({navigation}) => {
 
     launchImageLibrary(options, handleResponse);
   };
-
+  
   const handleResponse = response => {
     if (response.didCancel) {
       console.log('User cancelled image picker');
@@ -66,26 +65,27 @@ const SetupProfile = ({navigation}) => {
       console.log('Image picker error: ', response.error);
     } else {
       let imageUri = response.uri || response.assets?.[0]?.uri;
-      uploadImage(imageUri, "image");
+      uploadImage(imageUri, 'image');
     }
   };
   const uploadImage = async (uri, fileType) => {
     const response = await fetch(uri);
     const blob = await response.blob();
-    const storageRef = ref(storage, "images/"+ uid);
+    const storageRef = ref(storage, 'images/' + uid);
     const uploadTask = uploadBytesResumable(storageRef, blob);
-    uploadTask.on("state_changed", (snapshot) => {
-
-    },(error)=>{
-
-    }, ()=>{
-      getDownloadURL(uploadTask.snapshot.ref).then(async(downloadURL) =>{
-        console.log("File available at ", downloadURL);
-        setUserImage(downloadURL);
-        setImage("");
-      })
-    })
-  }
+    uploadTask.on(
+      'state_changed',
+      snapshot => {},
+      error => {},
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then(async downloadURL => {
+          console.log('File available at ', downloadURL);
+          setUserImage(downloadURL);
+          setImage('');
+        });
+      },
+    );
+  };
 
   const todoRef = firebase.firestore().collection('usersInfo');
 
@@ -93,7 +93,6 @@ const SetupProfile = ({navigation}) => {
     const uid = auth.currentUser?.uid;
     setLoading(true);
 
-    console.log('checking inputs');
     if (
       phoneNumber &&
       countryCode &&
@@ -101,12 +100,12 @@ const SetupProfile = ({navigation}) => {
       role &&
       username &&
       DevelopmentExpertise
-      // isCheckedTechnology &&
     ) {
-      console.log('checking Image upload...');
-      console.log('Uploaded Successfully!');
-      console.log('check Success!');
+
+      const fcmToken = await messaging().getToken();
+      console.log(fcmToken);
       const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+      
       const data = {
         username: username,
         countryCode: countryCode,
@@ -116,17 +115,20 @@ const SetupProfile = ({navigation}) => {
         developmentExpertise: DevelopmentExpertise,
         isCheckedTechnology: isCheckedTechnology,
         login: timestamp,
+        uid: uid,
+        photoUrl:userImage,
+        userFcm: fcmToken,
       };
 
       todoRef
         .doc(uid)
         .set(data)
         .then(() => {
-          console.log('adding Data.. ');
           setAddData('');
           Keyboard.dismiss();
           setLoading(false);
           console.log('success');
+          setDoc(doc(db, 'userChats', uid), {});
           navigation.navigate('HomeScreen');
         })
         .catch(error => {
@@ -145,7 +147,7 @@ const SetupProfile = ({navigation}) => {
         <View style={{flex: 1, justifyContent: 'center'}}>
           {image && (
             <Image
-              source={{uri : image}}
+              source={{uri: image}}
               style={{flex: 1}}
               resizeMode="contain"
             />
@@ -165,7 +167,11 @@ const SetupProfile = ({navigation}) => {
             </Pressable>
             <Image
               style={styles.profileImage}
-              source={userImage? {uri: userImage}: require('../assets/images/emptyProfile.webp')}
+              source={
+                userImage
+                  ? {uri: userImage}
+                  : require('../assets/images/emptyProfile.webp')
+              }
             />
           </View>
         </View>
