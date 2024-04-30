@@ -55,7 +55,7 @@ const FeedScreen = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
-      <View style={{display: 'flex', gap: 20}}>
+      <View style={{display: 'flex', gap: 20, justifyContent:'center', alignItems:'center'}}>
         {post.map(item => {
           if (item.postType === 'Normal Post') {
             return <NormalPost key={item.postId} post={item} />;

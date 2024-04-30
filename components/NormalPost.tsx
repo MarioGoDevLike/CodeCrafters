@@ -10,8 +10,13 @@ import {useAtom} from 'jotai';
 import {globalUid} from '../hooks/useAuth';
 import {formatDistanceToNow} from 'date-fns';
 import { useNavigation } from '@react-navigation/native';
+import PushNotification from "react-native-push-notification";
+import usePushNotification from '../config/usePushNotification';
+
 
 const NormalPost = ({post}) => {
+
+ 
   const navigation = useNavigation();
 
   const [url, setUrl] = useState();
@@ -52,7 +57,7 @@ const NormalPost = ({post}) => {
       Likes: newLikes, 
     });
   };
-
+  
 
   return (
     <View style={styles.mainContainer}>

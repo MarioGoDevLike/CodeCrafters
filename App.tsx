@@ -23,30 +23,27 @@ import Comments from './screens/Comments';
 import messaging from '@react-native-firebase/messaging';
 import { ChatContextProvider } from './config/chatContext';
 import Chat from './components/Chat';
+import usePushNotification from './config/usePushNotification';
+import EditProfile from './components/EditProfile';
 
 function App(): React.JSX.Element {
   const { user } = useAuth();
+  
 
   const Stack = createNativeStackNavigator();
-  async function requestUserPermission() {
-    const authStatus = await messaging().requestPermission();
-    const enabled =
-      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
-    if (enabled) {
-      console.log('Authorization status:', authStatus);
-    }
-  }
-  const getToken = async () => {
-    const token = await messaging().getToken();
-    console.log("Token", token);
-  }
+  const {
+    requestUserPermission,
+    getFCMToken,
+    listenToBackgroundNotifications,
+    listenToForegroundNotifications,
+    onNotificationOpenedAppFromBackground,
+    onNotificationOpenedAppFromQuit,
+  } = usePushNotification();
 
   useEffect(() => {
     requestUserPermission();
-    getToken();
   }, []);
+  
 
   return (
     <ChatContextProvider>
@@ -78,6 +75,11 @@ function App(): React.JSX.Element {
             name="Signup"
             component={Signup}
             options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="EditProfile"
+            component={EditProfile}
+            options={{ headerShown: true, headerTitle:'Edit Profile' }}
           />
           <Stack.Screen
             name="HomeScreen"

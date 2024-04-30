@@ -29,7 +29,6 @@ import {Image} from 'react-native-animatable';
 import {uploadBytesResumable, getDownloadURL, ref} from 'firebase/storage';
 import { doc, setDoc} from 'firebase/firestore';
 import messaging from '@react-native-firebase/messaging';
-import { getMessaging } from 'firebase/messaging';
 
 const SetupProfile = ({navigation}) => {
   const uid = auth.currentUser?.uid;

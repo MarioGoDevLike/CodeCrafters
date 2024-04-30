@@ -17,7 +17,7 @@ const getIconName = (routeName: string) => {
       iconName = 'add';
       break;
     case 'Notification':
-      iconName = 'notifications-outline';
+      iconName = 'logo-ionitron';
       break;
     case 'Profile':
       iconName = 'person-outline';

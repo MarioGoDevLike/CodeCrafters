@@ -14,35 +14,43 @@ import useAuth, {globalUid} from '../hooks/useAuth';
 import {getDownloadURL, ref} from 'firebase/storage';
 import {db, storage} from '../config/firebase';
 import {Image} from 'react-native-animatable';
-import {collection, doc, getDoc, getDocs} from 'firebase/firestore';
+import {collection, doc, getDoc, getDocs, onSnapshot } from 'firebase/firestore';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {getUserEmail} from '../components/RememberMe';
 import firestore from '@react-native-firebase/firestore';
-import * as firebase from 'firebase/compat/app';
+import IonIcon from 'react-native-vector-icons/Ionicons';
+import Loader from '../components/Loader';
 
 const ProfileScreen = ({navigation}) => {
   const [uid, setUid] = useAtom(globalUid);
   const [url, setUrl] = useState();
   const email = useAuth().user?.email;
-
   const [userInfo, setUserInfo] = useState<any | undefined>(null);
   const [expertise, setExpertise] = useState();
   const [role, setRole] = useState();
   const [gender, setGender] = useState();
+  const [Loading, setLoading] = useState(false);
   // const {user, logout} = useAuth();
 
   const fetchData = async () => {
+    setLoading(true);
     const docRef = doc(db, 'usersInfo', uid);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      setUserInfo(docSnap.data());
-      setExpertise(docSnap.data()?.developmentExpertise);
-      setRole(docSnap.data()?.role);
-      setGender(docSnap.data()?.gender);
-      console.log('retrieved Successfully');
-    } else {
-      console.log('No Such Document');
-    }
+    
+    const unsubscribe = onSnapshot(docRef, (docSnap) => {
+      if (docSnap.exists()) {
+        setUserInfo(docSnap.data());
+        setExpertise(docSnap.data()?.developmentExpertise);
+        setRole(docSnap.data()?.role);
+        setGender(docSnap.data()?.gender);
+        setLoading(false);
+        console.log('Document updated successfully');
+      } else {
+        setLoading(false);
+        console.log('No such document');
+      }
+    });
+  
+    return () => unsubscribe();
   };
   useEffect(() => {
     const storageRef = ref(storage, 'images/' + uid);
@@ -51,24 +59,7 @@ const ProfileScreen = ({navigation}) => {
     });
     fetchData();
   }, []);
-
-  const updateProfile = () => {
-    firestore()
-      .collection('usersInfo')
-      .doc(uid)
-      .update({
-        developmentExpertise: expertise,
-        role: role,
-        gender: gender,
-      })
-      .then(res => {
-        Alert.alert('Profile updated.');
-      })
-      .catch(err => {
-        console.log(err);
-        Alert.alert('Error Happened');
-      });
-  };
+  
   const signOutUser = async () => {
     // await logout();
   };
@@ -94,8 +85,8 @@ const ProfileScreen = ({navigation}) => {
             @{userInfo?.username}
           </Text>
           <View style={styles.buttonContainer}>
-            <Pressable onPress={updateProfile} style={styles.buttons}>
-              <Text style={styles.text}>Update Profile</Text>
+            <Pressable onPress={()=> navigation.navigate('EditProfile')} style={styles.buttons}>
+              <Text style={styles.text}>Edit Profile</Text>
             </Pressable>
             <Pressable onPress={signOutUser} style={styles.buttons}>
               <Text style={styles.text}>Logout</Text>
@@ -103,70 +94,65 @@ const ProfileScreen = ({navigation}) => {
           </View>
         </View>
         <View style={styles.inputContainer}>
-          <View style={styles.passwordContainer}>
-            <Text style={styles.textInputTitle}>Expertise:</Text>
-
-            <TextInput
-              // secureTextEntry={!showPassword}
-              value={expertise}
-              onChangeText={value => setExpertise(value)}
-              style={styles.input}
-            />
+          <View style={{display: 'flex', flexDirection: 'row', gap: 70}}>
+            <View style={styles.passwordContainer}>
+              <Text style={styles.textInputTitle}>Expertise:</Text>
+              <Text style={styles.input}>{expertise}</Text>
+            </View>
+            <View style={styles.passwordContainer}>
+              <Text style={styles.textInputTitle}>Role:</Text>
+              <Text style={styles.input}>{role}</Text>
+            </View>
           </View>
-          <View style={styles.passwordContainer}>
-            <Text style={styles.textInputTitle}>Role:</Text>
-            <TextInput
-              // secureTextEntry={!showPassword}
-              value={role}
-              onChangeText={value => setRole(value)}
-              style={styles.input}
-            />
-          </View>
-          <View style={styles.passwordContainer}>
-            <Text style={styles.textInputTitle}>Email:</Text>
-            <TextInput
-              value={email}
-              // secureTextEntry={!showPassword}
-              // onChangeText={value => setPassword(value)}
-              style={styles.input}
-            />
+          <View style={{display: 'flex', flexDirection: 'row', gap: 70}}>
+            <View style={styles.passwordContainer}>
+              <Text style={styles.textInputTitle}>Email:</Text>
+              <Text style={styles.input}>{email}</Text>
+            </View>
+            <View style={styles.passwordContainer}>
+              <Text style={styles.textInputTitle}>Gender:</Text>
+              <Text style={styles.input}>{gender}</Text>
+            </View>
           </View>
           <View style={styles.moreInfoContainer}>
-            <Text style={styles.smallTitle}>
-              More about {userInfo?.username}
-            </Text>
-            <View style={styles.infoContainer}>
-              <View style={styles.passwordContainer}>
-                <Text style={styles.textInputTitle}>Gender:</Text>
-
-                <TextInput
-                  value={gender}
-                  onChangeText={value => setGender(value)}
-                  style={styles.input}
-                />
-              </View>
-            </View>
+            <View style={styles.infoContainer}></View>
             <View style={styles.infoContainer}>
               <View style={styles.passwordContainer}>
                 <Text style={styles.textInputTitle}>Phone Number:</Text>
 
-                <TextInput
-                  value={userInfo?.countryCode + '  ' + userInfo?.phoneNumber}
-                  style={styles.input}
-                />
+                <Text style={styles.input}>
+                  {userInfo?.countryCode + '  ' + userInfo?.phoneNumber}
+                </Text>
               </View>
+            </View>
+          </View>
+          <View style={{justifyContent:'flex-end', alignItems:'center', flexDirection:'column', gap:20,height:150}}>
+            <Text style={{color:'#24786D', fontWeight:'500', fontSize:15,}}>Social Links</Text>
+            <View style={{display:'flex', gap:20, flexDirection:'row',}}>
+              <IonIcon size={30} name='logo-github' color={'black'} />
+              <IonIcon size={30} name='logo-linkedin' color={'#0a66c2'}/>
+              <IonIcon size={30} name='link-outline' color={'black'}/>
             </View>
           </View>
         </View>
       </View>
+      {Loading ? <Loader /> : null}
+
     </ScrollView>
+    
   );
 };
 const styles = StyleSheet.create({
+  passwordContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 10,
+    width:150,
+  },
   text: {
     color: 'white',
-    fontWeight:'300',
-    fontSize:10,
+    fontWeight: '300',
+    fontSize: 10,
   },
   tabBarIcon: {},
   picStyle: {
@@ -186,14 +172,14 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     display: 'flex',
-    gap: 10,
-    padding: 20,
+    gap: 20,
+    padding: 10,
   },
   textInputTitle: {
     color: '#24786D',
     fontWeight: 'bold',
-    fontSize: 9,
-    marginLeft: 15,
+    fontSize: 13,
+    marginLeft: 0,
   },
   input: {
     flex: 1,
@@ -201,17 +187,10 @@ const styles = StyleSheet.create({
     color: 'black',
     borderRadius: 30,
   },
-  passwordContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'white',
-    borderRadius: 12,
-    paddingHorizontal: 15,
-  },
+
   moreInfoContainer: {
     display: 'flex',
-    gap: 10,
+    gap: 5,
   },
   smallTitle: {
     padding: 5,
@@ -243,7 +222,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
     padding: 10,
-    marginBottom:10,
+    marginBottom: 10,
   },
   buttons: {
     backgroundColor: 'transparent',
