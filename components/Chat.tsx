@@ -1,37 +1,50 @@
 import {View, Text, StyleSheet} from 'react-native';
-import React, {useContext, useEffect, useState} from 'react';
-import {ChatContext} from '../config/chatContext';
-import { doc, onSnapshot } from 'firebase/firestore';
-import { db } from '../config/firebase';
+import React, {useEffect, useState} from 'react';
+import {doc, onSnapshot} from 'firebase/firestore';
+import {db} from '../config/firebase';
 import Message from './Message';
+import Input from './Input';
+import Loader from './Loader';
 
 const Chat = ({route}) => {
   const {userId, currentUserUid, userUsername} = route.params;
 
   const [messages, setMessages] = useState([]);
+  const [chatId, setChatId] = useState('');
+  const [Loading, setLoading] = useState(false);
 
-  useEffect(()=>{
-    const unSub = onSnapshot(doc(db,"chats", userId + currentUserUid), (doc)=>{
-        doc.exists() && setMessages(doc.data().messages);
-    },)
-    console.log(messages);
-    return()=>{
-        unSub();
-    }
-  },[data.chatId]);
+  useEffect(() => {
+    setLoading(true);
+    const chatId = currentUserUid === userId? currentUserUid + userId :  userId + currentUserUid;
+    setChatId(chatId);
+    const unSub = onSnapshot(doc(db, 'chats', chatId), doc => {
+      doc.exists() && setMessages(doc.data().messages);
+      setLoading(false);
+    });
+
+
+    return () => {
+      unSub();
+
+    };
+  }, [userId, currentUserUid]);
 
   return (
-    <View>
+    <View style={{flex: 1}}>
       <View style={styles.header}>
         <Text style={{paddingLeft: 10, color: 'black', fontWeight: '300'}}>
           {userUsername}
         </Text>
-
-        {messages.map((m)=>(
-            <Message message={m} key={m.id} />  
+      </View>
+      <View>
+        {messages.map(m => (
+          <Message message={m} key={m.id} />
         ))}
       </View>
+      <Input userId={userId} chatId={chatId} />
+      {Loading ? <Loader /> : null}
     </View>
+    
   );
 };
 

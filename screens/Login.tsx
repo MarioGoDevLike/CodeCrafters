@@ -21,9 +21,13 @@ import {FacebookAuthProvider, GoogleAuthProvider} from 'firebase/auth/cordova';
 import Loader from '../components/Loader';
 import {firebase} from '@react-native-firebase/firestore';
 import CheckBox from 'react-native-check-box';
-import { getCheckStatus, getUserEmail, storeCheckStatus, storeUserEmail, storeUserPassword} from '../components/RememberMe';
-
-
+import {
+  getCheckStatus,
+  getUserEmail,
+  storeCheckStatus,
+  storeUserEmail,
+  storeUserPassword,
+} from '../components/RememberMe';
 
 GoogleSignin.configure({
   webClientId:
@@ -39,7 +43,6 @@ const Login = ({navigation}) => {
   const [err, setErr] = useState('');
   const todoRef = firebase.firestore().collection('usersInfo');
   const [rememberMe, setRememberme] = useState(false);
-
 
   useEffect(() => {
     const fetchValuesFormStorage = async () => {
@@ -142,10 +145,11 @@ const Login = ({navigation}) => {
       try {
         await signInWithEmailAndPassword(auth, email, password);
         const uid = auth.currentUser?.uid;
-        setLoading(false);
         if ((await todoRef.doc(uid).get()).exists == true) {
+          setLoading(false);
           navigation.navigate('HomeScreen');
         } else {
+          setLoading(false);
           navigation.navigate('SetupProfile');
         }
       } catch (err) {
@@ -161,8 +165,6 @@ const Login = ({navigation}) => {
       }
     }
   };
- 
-
 
   return (
     <View style={styles.mainContainer}>
@@ -259,7 +261,6 @@ const styles = StyleSheet.create({
     color: 'gray',
     fontSize: 9,
   },
-
 
   errText: {
     fontSize: 10,
@@ -403,4 +404,3 @@ const styles = StyleSheet.create({
   },
 });
 export default Login;
-

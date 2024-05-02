@@ -154,10 +154,10 @@ const MessageScreen = ({navigation}) => {
                   source={{uri: chatData?.userInfo?.photoUrl}}
                 />
                 <View style={{display: 'flex', flexDirection: 'column'}}>
-                  <Text style={{fontSize: 12, fontWeight: '300'}}>
+                  <Text style={{fontSize: 12, fontWeight: '500'}}>
                     {chatData.userInfo.username}
                   </Text>
-                  <Text>{chatData.lastMessage?.text}</Text>
+                  <Text style={{fontSize:12, fontWeight:'300'}}>{chatData.lastMessage?.text}</Text>
                 </View>
               </View>
             </TouchableOpacity>
