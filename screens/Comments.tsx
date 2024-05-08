@@ -316,11 +316,9 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   mainContainer: {
-    marginTop: 10,
-    padding: 10,
-    width: 350,
-    marginLeft: 5,
     display: 'flex',
+    justifyContent:'center',
+    padding:10,
     gap: 15,
   },
   picStyle: {
@@ -342,7 +340,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   postPic: {
-    width: 330,
+    width: 380,
     height: 240,
     borderRadius: 10,
     resizeMode: 'stretch',

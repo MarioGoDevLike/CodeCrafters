@@ -25,6 +25,7 @@ import { ChatContextProvider } from './config/chatContext';
 import Chat from './components/Chat';
 import usePushNotification from './config/usePushNotification';
 import EditProfile from './components/EditProfile';
+import Search from './screens/Search';
 
 function App(): React.JSX.Element {
   const { user } = useAuth();
@@ -94,6 +95,11 @@ function App(): React.JSX.Element {
           <Stack.Screen
             name="Chat"
             component={Chat}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Search"
+            component={Search}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>

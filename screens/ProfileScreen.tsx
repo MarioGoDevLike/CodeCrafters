@@ -14,12 +14,13 @@ import useAuth, {globalUid} from '../hooks/useAuth';
 import {getDownloadURL, ref} from 'firebase/storage';
 import {db, storage} from '../config/firebase';
 import {Image} from 'react-native-animatable';
-import {collection, doc, getDoc, getDocs, onSnapshot } from 'firebase/firestore';
+import {collection, doc, getDoc, getDocs, onSnapshot} from 'firebase/firestore';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {getUserEmail} from '../components/RememberMe';
 import firestore from '@react-native-firebase/firestore';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import Loader from '../components/Loader';
+import Dialog from "react-native-dialog";
 
 const ProfileScreen = ({navigation}) => {
   const [uid, setUid] = useAtom(globalUid);
@@ -30,26 +31,30 @@ const ProfileScreen = ({navigation}) => {
   const [role, setRole] = useState();
   const [gender, setGender] = useState();
   const [Loading, setLoading] = useState(false);
+  const [Bio, setBio] = useState(
+    'Just getting started. Excited to be a part of the community!',
+  );
   // const {user, logout} = useAuth();
 
   const fetchData = async () => {
     setLoading(true);
     const docRef = doc(db, 'usersInfo', uid);
-    
-    const unsubscribe = onSnapshot(docRef, (docSnap) => {
+
+    const unsubscribe = onSnapshot(docRef, docSnap => {
       if (docSnap.exists()) {
         setUserInfo(docSnap.data());
         setExpertise(docSnap.data()?.developmentExpertise);
         setRole(docSnap.data()?.role);
         setGender(docSnap.data()?.gender);
+        const bio = docSnap.data()?.bio || 'Just getting started. Excited to be a part of the community!';
+        setBio(bio);
         setLoading(false);
-        console.log('Document updated successfully');
       } else {
         setLoading(false);
         console.log('No such document');
       }
     });
-  
+
     return () => unsubscribe();
   };
   useEffect(() => {
@@ -59,10 +64,11 @@ const ProfileScreen = ({navigation}) => {
     });
     fetchData();
   }, []);
-  
+
   const signOutUser = async () => {
     // await logout();
   };
+  
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -78,22 +84,20 @@ const ProfileScreen = ({navigation}) => {
           <Text
             style={{
               paddingTop: 5,
-              fontSize: 15,
+              fontSize: 20,
               fontFamily: 'MarkaziText-Medium',
               color: 'white',
             }}>
-            @{userInfo?.username}
+            {userInfo?.username}
           </Text>
-          <View style={styles.buttonContainer}>
-            <Pressable onPress={()=> navigation.navigate('EditProfile')} style={styles.buttons}>
-              <Text style={styles.text}>Edit Profile</Text>
-            </Pressable>
-            <Pressable onPress={signOutUser} style={styles.buttons}>
-              <Text style={styles.text}>Logout</Text>
-            </Pressable>
+          <View
+            style={styles.passwordContainer2}>
+            <Text style={styles.inputBio}>{Bio}</Text>
           </View>
+          
         </View>
         <View style={styles.inputContainer}>
+          
           <View style={{display: 'flex', flexDirection: 'row', gap: 70}}>
             <View style={styles.passwordContainer}>
               <Text style={styles.textInputTitle}>Expertise:</Text>
@@ -126,20 +130,36 @@ const ProfileScreen = ({navigation}) => {
               </View>
             </View>
           </View>
-          <View style={{justifyContent:'flex-end', alignItems:'center', flexDirection:'column', gap:20,height:150}}>
-            <Text style={{color:'#24786D', fontWeight:'500', fontSize:15,}}>Social Links</Text>
-            <View style={{display:'flex', gap:20, flexDirection:'row',}}>
-              <IonIcon size={30} name='logo-github' color={'black'} />
-              <IonIcon size={30} name='logo-linkedin' color={'#0a66c2'}/>
-              <IonIcon size={30} name='link-outline' color={'black'}/>
+          <View
+            style={{
+              justifyContent: 'flex-end',
+              alignItems: 'center',
+              flexDirection: 'column',
+              gap: 20,
+            }}>
+            <Text style={{color: '#24786D', fontWeight: '500', fontSize: 15}}>
+              Social Links
+            </Text>
+            <View style={{display: 'flex', gap: 20, flexDirection: 'row'}}>
+              <IonIcon.Button size={30} name="logo-github" color={'black'} />
+              <IonIcon size={30} name="logo-linkedin" color={'#0a66c2'} />
+              <IonIcon size={30} name="link-outline" color={'black'} />
             </View>
+          </View>
+          <View style={styles.buttonContainer}>
+            <Pressable
+              onPress={() => navigation.navigate('EditProfile')}
+              style={styles.buttons}>
+              <Text style={styles.text}>Edit Profile</Text>
+            </Pressable>
+            <Pressable onPress={signOutUser} style={styles.buttons}>
+              <Text style={styles.text}>Logout</Text>
+            </Pressable>
           </View>
         </View>
       </View>
       {Loading ? <Loader /> : null}
-
     </ScrollView>
-    
   );
 };
 const styles = StyleSheet.create({
@@ -147,12 +167,21 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     gap: 10,
-    width:150,
+    width: 150,
   },
+  passwordContainer2:{
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 10,
+    width: 200,
+    paddingBottom:20,
+  },
+
   text: {
-    color: 'white',
+    color: '#24786D',
     fontWeight: '300',
     fontSize: 10,
+    
   },
   tabBarIcon: {},
   picStyle: {
@@ -164,11 +193,11 @@ const styles = StyleSheet.create({
     borderWidth: 2,
   },
   headerContainer: {
-    height: 210,
     display: 'flex',
     justifyContent: 'flex-end',
     alignItems: 'center',
     backgroundColor: '#24786D',
+    paddingTop:20,
   },
   inputContainer: {
     display: 'flex',
@@ -179,13 +208,16 @@ const styles = StyleSheet.create({
     color: '#24786D',
     fontWeight: 'bold',
     fontSize: 13,
-    marginLeft: 0,
   },
+
   input: {
-    flex: 1,
     fontSize: 12,
     color: 'black',
-    borderRadius: 30,
+  },
+  inputBio: {
+    fontSize: 11,
+    color: 'white',
+    fontWeight:'300',
   },
 
   moreInfoContainer: {
@@ -213,7 +245,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
-    paddingBottom: 10,
+    height:750,
   },
   buttonContainer: {
     display: 'flex',
@@ -227,7 +259,7 @@ const styles = StyleSheet.create({
   buttons: {
     backgroundColor: 'transparent',
     borderRadius: 5,
-    borderColor: 'white',
+    borderColor: '#24786D',
     borderWidth: 1,
     padding: 10,
     opacity: 0.9,

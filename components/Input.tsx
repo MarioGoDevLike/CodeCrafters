@@ -57,10 +57,7 @@ const styles = StyleSheet.create({
     textInput: {
       borderWidth: 1,
       borderColor: '#d3d3d3',
-      width: 285,
-      marginRight: 10,
-      marginLeft: 10,
-  
+      width: 300,
       backgroundColor: '#fff',
     },
     mainContainer: {

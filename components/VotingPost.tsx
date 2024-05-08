@@ -39,6 +39,12 @@ const VotingPost = ({post}) => {
       setUrl(downloadURL);
     });
     fetchData();
+    if (globaluid && post.postUpVote.includes(globaluid)) {
+      setUpVote(true);
+    }
+    if (globaluid && post.postDownVote.includes(globaluid)) {
+      setUpVote(true);
+    }
   }, []);
 
 
@@ -110,6 +116,7 @@ const VotingPost = ({post}) => {
 const styles = StyleSheet.create({
   postContain: {
     display: 'flex',
+    width:360,
     gap: 10,
   },
   interaction: {
@@ -123,7 +130,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderRadius: 10,
     borderColor: '#d3d3d3',
-    width: 350,
     marginLeft: 5,
     display: 'flex',
     gap: 15,
@@ -147,7 +153,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   postPic: {
-    width: 330,
+    width: 360,
     height: 240,
     resizeMode: 'stretch',
     borderRadius: 10,

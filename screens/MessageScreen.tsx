@@ -23,6 +23,7 @@ import {
 import {useAtom} from 'jotai';
 import {globalUid} from '../hooks/useAuth';
 import {ChatContext} from '../config/chatContext';
+import Loader from '../components/Loader';
 
 const MessageScreen = ({navigation}) => {
   const [username, setUsername] = useState('');
@@ -32,6 +33,7 @@ const MessageScreen = ({navigation}) => {
   const [userInfo, setUserInfo] = useState<any | undefined>(null);
   const [chats, setChats] = useState([]);
   const [userSaved, setUserSaved] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const {dispatch} = useContext(ChatContext);
   const fetchData = async () => {
@@ -46,9 +48,12 @@ const MessageScreen = ({navigation}) => {
   };
   useEffect(() => {
     fetchData();
+    
     const getChats = () => {
+      setLoading(true);
       const unsub = onSnapshot(doc(db, 'userChats', globaluid), doc => {
         setChats(doc.data());
+        setLoading(false);
       });
       return () => {
         unsub();
@@ -157,12 +162,15 @@ const MessageScreen = ({navigation}) => {
                   <Text style={{fontSize: 12, fontWeight: '500'}}>
                     {chatData.userInfo.username}
                   </Text>
-                  <Text style={{fontSize:12, fontWeight:'300'}}>{chatData.lastMessage?.text}</Text>
+                  <Text style={{fontSize: 12, fontWeight: '300'}}>
+                    {chatData.lastMessage?.text}
+                  </Text>
                 </View>
               </View>
             </TouchableOpacity>
           ))
         : null}
+      {loading ? <Loader /> : null}
     </View>
   );
 };

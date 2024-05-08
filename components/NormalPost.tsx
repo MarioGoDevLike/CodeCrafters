@@ -9,14 +9,9 @@ import firestore from '@react-native-firebase/firestore';
 import {useAtom} from 'jotai';
 import {globalUid} from '../hooks/useAuth';
 import {formatDistanceToNow} from 'date-fns';
-import { useNavigation } from '@react-navigation/native';
-import PushNotification from "react-native-push-notification";
-import usePushNotification from '../config/usePushNotification';
-
+import {useNavigation} from '@react-navigation/native';
 
 const NormalPost = ({post}) => {
-
- 
   const navigation = useNavigation();
 
   const [url, setUrl] = useState();
@@ -46,18 +41,20 @@ const NormalPost = ({post}) => {
       setUrl(downloadURL);
     });
     fetchData();
+    if (globaluid && post.postLikes.includes(globaluid)) {
+      setLiked(true);
+    }
   }, []);
 
   const likePost = () => {
     const newLikes = liked
-      ? post.postLikes.filter(id => id !== globaluid)
-      : [...post.postLikes, globaluid];
+     ? post.postLikes.filter(id => id !== globaluid)
+     : [...post.postLikes, globaluid];
     setLiked(!liked);
     firestore().collection('posts').doc(post.postId).update({
-      Likes: newLikes, 
+     Likes: newLikes, 
     });
-  };
-  
+   };
 
   return (
     <View style={styles.mainContainer}>
@@ -104,7 +101,18 @@ const NormalPost = ({post}) => {
             <Text>{likesCount}</Text>
           </View>
         </Pressable>
-        <Pressable onPress={() => navigation.navigate('Comments', {postData: post, postId : post.postId, username:userInfo?.username, userPic: url ? {uri: url} : require('../assets/images/emptyProfile.webp'), postTime: timeAgo})}>
+        <Pressable
+          onPress={() =>
+            navigation.navigate('Comments', {
+              postData: post,
+              postId: post.postId,
+              username: userInfo?.username,
+              userPic: url
+                ? {uri: url}
+                : require('../assets/images/emptyProfile.webp'),
+              postTime: timeAgo,
+            })
+          }>
           <View style={styles.interaction}>
             <IonIcon size={25} name="chatbox-outline" />
             <Text>{post.postComments}</Text>
@@ -131,7 +139,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderRadius: 10,
     borderColor: '#d3d3d3',
-    width: 350,
     marginLeft: 5,
     display: 'flex',
     gap: 15,
@@ -155,7 +162,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   postPic: {
-    width: 330,
+    width: 360,
     height: 240,
     borderRadius: 10,
     resizeMode: 'stretch',

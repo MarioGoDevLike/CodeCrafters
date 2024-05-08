@@ -1,8 +1,7 @@
 import {View, Text, StyleSheet, ScrollView} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {collectionGroup, query, getDocs, onSnapshot} from 'firebase/firestore';
-import {useAtom} from 'jotai';
-import {globalUid} from '../hooks/useAuth';
+
 import {db} from '../config/firebase';
 import NormalPost from '../components/NormalPost';
 import VotingPost from '../components/VotingPost';

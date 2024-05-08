@@ -25,6 +25,7 @@ const EditProfile = () => {
   const [role, setRole] = useState();
   const [gender, setGender] = useState();
   const [username, setUsername] = useState();
+  const [bio, setBio] = useState();
   const [Loading, setLoading] = useState(false);
 
   // const {user, logout} = useAuth();
@@ -39,6 +40,10 @@ const EditProfile = () => {
       setRole(docSnap.data()?.role);
       setGender(docSnap.data()?.gender);
       setUsername(docSnap.data()?.username);
+      const bio =
+        docSnap.data()?.bio ||
+        ' ';
+      setBio(bio);
       setLoading(false);
       console.log('retrieved Successfully');
     } else {
@@ -64,6 +69,7 @@ const EditProfile = () => {
         role: role,
         gender: gender,
         username: username,
+        bio: bio,
       })
       .then(res => {
         Alert.alert('Profile updated.');
@@ -89,6 +95,16 @@ const EditProfile = () => {
               style={styles.input}
             />
           </View>
+          <View style={styles.infoContainer}>
+            <View style={styles.passwordContainer}>
+              <Text style={styles.textInputTitle}>Bio:</Text>
+              <TextInput
+                value={bio}
+                onChangeText={value => setBio(value)}
+                style={styles.input}
+              />
+            </View>
+          </View>
           <View style={styles.passwordContainer}>
             <Text style={styles.textInputTitle}>Expertise:</Text>
             <TextInput
@@ -101,28 +117,10 @@ const EditProfile = () => {
           <View style={styles.passwordContainer}>
             <Text style={styles.textInputTitle}>Role:</Text>
             <TextInput
-              // secureTextEntry={!showPassword}
               value={role}
               onChangeText={value => setRole(value)}
               style={styles.input}
             />
-          </View>
-          <View style={styles.passwordContainer}>
-            <Text style={styles.textInputTitle}>Email:</Text>
-            <TextInput
-              value={email}
-              // secureTextEntry={!showPassword}
-              // onChangeText={value => setPassword(value)}
-              style={styles.input}
-            />
-          </View>
-          <View style={styles.passwordContainer}>
-            <Text style={styles.textInputTitle}>Country Code:</Text>
-            <Text style={styles.textStyle}>{userInfo?.countryCode}</Text>
-          </View>
-          <View style={styles.passwordContainer}>
-            <Text style={styles.textInputTitle}>Phone Number:</Text>
-            <Text style={styles.textStyle}>{userInfo?.phoneNumber}</Text>
           </View>
 
           <View style={styles.infoContainer}>

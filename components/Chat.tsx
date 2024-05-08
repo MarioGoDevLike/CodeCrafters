@@ -15,7 +15,8 @@ const Chat = ({route}) => {
 
   useEffect(() => {
     setLoading(true);
-    const chatId = currentUserUid === userId? currentUserUid + userId :  userId + currentUserUid;
+    const chatId = currentUserUid === userId?  currentUserUid + userId : userId + currentUserUid;
+    console.log(chatId);
     setChatId(chatId);
     const unSub = onSnapshot(doc(db, 'chats', chatId), doc => {
       doc.exists() && setMessages(doc.data().messages);

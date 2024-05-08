@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IconIon from 'react-native-vector-icons/Ionicons';
@@ -25,13 +25,19 @@ const HomeScreen = () => {
       screenOptions={screenOptions}>
       <Home.Screen
         name="Feed"
-        options={{
-          tabBarIconStyle: styles.tabBarIcon,
-          tabBarShowLabel: false,
-          headerShown: true,
-          headerTitleAlign:'center',
-        }}
         component={FeedScreen}
+        options={({ navigation }) => ({
+          headerShown:true,
+          headerTitleAlign: 'center',
+          headerRight: () => (
+            <TouchableOpacity
+              style={{ marginRight: 15 }}
+              onPress={() => navigation.navigate('Search')}
+            >
+              <IconIon name="search" size={24} color="black" />
+            </TouchableOpacity>
+          ),
+        })}
       />
       <Home.Screen
         name="Message"
