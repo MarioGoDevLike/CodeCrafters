@@ -26,6 +26,8 @@ import Chat from './components/Chat';
 import usePushNotification from './config/usePushNotification';
 import EditProfile from './components/EditProfile';
 import Search from './screens/Search';
+import SearchItem from './screens/SearchItem';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 function App(): React.JSX.Element {
   const { user } = useAuth();
@@ -47,6 +49,8 @@ function App(): React.JSX.Element {
   
 
   return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+
     <ChatContextProvider>
       <NavigationContainer>
         <Stack.Navigator
@@ -63,9 +67,14 @@ function App(): React.JSX.Element {
             options={{ headerShown: false }}
           />
           <Stack.Screen
+            name="SearchResult"
+            component={SearchItem}
+            options={{ headerShown: true, headerTitle:'Result' }}
+          />
+          <Stack.Screen
             name="Welcome"
             component={WelcomeScreen}
-            options={{ headerShown: false }}
+            options={{ headerShown: false,  }}
           />
           <Stack.Screen
             name="Login"
@@ -100,11 +109,12 @@ function App(): React.JSX.Element {
           <Stack.Screen
             name="Search"
             component={Search}
-            options={{ headerShown: false }}
+            options={{ headerShown: true }}
           />
         </Stack.Navigator>
       </NavigationContainer>
     </ChatContextProvider>
+    </GestureHandlerRootView>
   );
 }
 

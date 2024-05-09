@@ -1,7 +1,6 @@
 import { View, TextInput, StyleSheet } from 'react-native';
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import IonIcon from 'react-native-vector-icons/Ionicons';
-import { ChatContext } from '../config/chatContext';
 import { db } from '../config/firebase';
 import { Timestamp, arrayUnion, doc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { useAtom } from 'jotai';
@@ -10,7 +9,7 @@ import uuid from 'react-native-uuid';
 
 const Input = ({ chatId, userId }) => {
   const [text, setText] = useState('');
-  const { data } = useContext(ChatContext);
+  
   const [uid] = useAtom(globalUid);
 
   const handleSend = async () => {
@@ -55,22 +54,26 @@ const Input = ({ chatId, userId }) => {
 
 const styles = StyleSheet.create({
     textInput: {
+      height:50,
       borderWidth: 1,
       borderColor: '#d3d3d3',
       width: 300,
       backgroundColor: '#fff',
     },
     mainContainer: {
-      flex: 1,
       display: 'flex',
       flexDirection: 'row',
       alignItems: 'flex-end',
     },
     iconStyle: {
-      padding: 15,
       backgroundColor: '#0390fc',
       height: 50,
+      flex:1,
+      justifyContent:'center',
+      width:100,
+      padding:10,
     },
+    
   });
 
 export default Input;

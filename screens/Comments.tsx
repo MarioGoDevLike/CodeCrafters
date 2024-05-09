@@ -84,7 +84,7 @@ const Comments = ({route}) => {
 
     fetchUserData();
   }, [comments]);
-  const likesCount = postData.postLikes.length;
+  const likesCount = postData.postLikes ? postData.postLikes.length : 0; 
   // const likePost = () => {
   //   const newLikes = liked
   //     ? postData.postLikes.filter(id => id !== globaluid)

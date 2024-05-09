@@ -34,8 +34,9 @@ const MessageScreen = ({navigation}) => {
   const [chats, setChats] = useState([]);
   const [userSaved, setUserSaved] = useState(null);
   const [loading, setLoading] = useState(false);
-
   const {dispatch} = useContext(ChatContext);
+
+  
   const fetchData = async () => {
     const currentUid = globaluid;
     const docRef = doc(db, 'usersInfo', currentUid);
@@ -48,7 +49,6 @@ const MessageScreen = ({navigation}) => {
   };
   useEffect(() => {
     fetchData();
-    
     const getChats = () => {
       setLoading(true);
       const unsub = onSnapshot(doc(db, 'userChats', globaluid), doc => {

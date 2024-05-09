@@ -15,7 +15,6 @@ const NotificationScreen = () => {
   const [chat, setChat] = useState([]);
   const [userInput , setUserInput] = useState('');
   const [loading ,setLoading] = useState(false);
-  const [error ,setError] = useState(false);
 
   const API_KEY = "AIzaSyBl0jjxjNDG9aZBimhAQxc3UzcClevSXfY";
 

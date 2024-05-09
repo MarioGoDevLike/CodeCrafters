@@ -8,23 +8,26 @@ import {
   Button,
   Pressable,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useCallback, useMemo, useRef, useState} from 'react';
 import {useAtom} from 'jotai';
 import useAuth, {globalUid} from '../hooks/useAuth';
 import {getDownloadURL, ref} from 'firebase/storage';
-import {db, storage} from '../config/firebase';
+import {auth, db, storage} from '../config/firebase';
 import {Image} from 'react-native-animatable';
-import {collection, doc, getDoc, getDocs, onSnapshot} from 'firebase/firestore';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import {getUserEmail} from '../components/RememberMe';
-import firestore from '@react-native-firebase/firestore';
+import {doc, onSnapshot} from 'firebase/firestore';
+import {clearUserEmail, getUserEmail} from '../components/RememberMe';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import Loader from '../components/Loader';
-import Dialog from "react-native-dialog";
+import BottomSheet, {BottomSheetBackdrop} from '@gorhom/bottom-sheet';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import firestore from '@react-native-firebase/firestore';
 
 const ProfileScreen = ({navigation}) => {
+  const [buttonName, setButtonName] = useState('');
+  const [link, setLink] = useState('');
   const [uid, setUid] = useAtom(globalUid);
-  const [url, setUrl] = useState();
+  const snapPoints = useMemo(() => ['25%', '50%', '70%'], []);
+  const [url, setUrl] = useState('');
   const email = useAuth().user?.email;
   const [userInfo, setUserInfo] = useState<any | undefined>(null);
   const [expertise, setExpertise] = useState();
@@ -34,7 +37,25 @@ const ProfileScreen = ({navigation}) => {
   const [Bio, setBio] = useState(
     'Just getting started. Excited to be a part of the community!',
   );
-  // const {user, logout} = useAuth();
+
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  // const bottomSheetRef2 = useRef<BottomSheet>(null);
+
+  const handleClosePress = () => bottomSheetRef.current?.close();
+  const handleOpenPress = () => bottomSheetRef.current?.expand();
+  const handleCollapsePress = () => bottomSheetRef.current?.collapse();
+  const snapeToIndex = (index: number) =>
+    bottomSheetRef.current?.snapToIndex(index);
+  const renderBackdrop = useCallback(
+    (props: any) => (
+      <BottomSheetBackdrop
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
+        {...props}
+      />
+    ),
+    [],
+  );
 
   const fetchData = async () => {
     setLoading(true);
@@ -46,7 +67,9 @@ const ProfileScreen = ({navigation}) => {
         setExpertise(docSnap.data()?.developmentExpertise);
         setRole(docSnap.data()?.role);
         setGender(docSnap.data()?.gender);
-        const bio = docSnap.data()?.bio || 'Just getting started. Excited to be a part of the community!';
+        const bio =
+          docSnap.data()?.bio ||
+          'Just getting started. Excited to be a part of the community!';
         setBio(bio);
         setLoading(false);
       } else {
@@ -59,16 +82,82 @@ const ProfileScreen = ({navigation}) => {
   };
   useEffect(() => {
     const storageRef = ref(storage, 'images/' + uid);
-    getDownloadURL(storageRef).then(async downloadURL => {
+    getDownloadURL(storageRef).then(async (downloadURL: string) => {
       setUrl(downloadURL);
     });
     fetchData();
   }, []);
 
   const signOutUser = async () => {
-    // await logout();
+    auth.signOut().then(
+      function () {
+        navigation.navigate('Login');
+        clearUserEmail();
+        console.log('Signed Out');
+      },
+      function (error) {
+        console.error('Sign Out Error', error);
+      },
+    );
+  };
+  const handlePressGithub = () => {
+    bottomSheetRef.current?.expand();
+    setButtonName('Github');
+  };
+  const handlePressLinkedIn = () => {
+    bottomSheetRef.current?.expand();
+    setButtonName('LinkedIn');
+  };
+  const handlePressPortfolio = () => {
+    bottomSheetRef.current?.expand();
+    setButtonName('Portfolio');
   };
   
+  const handleSaveLink = () => {
+    if (buttonName === 'Github') {
+      firestore()
+        .collection('usersInfo')
+        .doc(uid)
+        .update({
+          github: link,
+        })
+        .then(res => {
+          Alert.alert('Database updated.');
+        })
+        .catch(err => {
+          console.log(err);
+          Alert.alert('Error Happened');
+        });
+    } else if (buttonName === 'LinkedIn') {
+      firestore()
+        .collection('usersInfo')
+        .doc(uid)
+        .update({
+          linkedIn: link,
+        })
+        .then(res => {
+          Alert.alert('Database updated.');
+        })
+        .catch(err => {
+          console.log(err);
+          Alert.alert('Error Happened');
+        });
+    }else if(buttonName === 'Portfolio'){
+      firestore()
+        .collection('usersInfo')
+        .doc(uid)
+        .update({
+          portfolio:link,
+        })
+        .then(res => {
+          Alert.alert('Database updated.');
+        })
+        .catch(err => {
+          console.log(err);
+          Alert.alert('Error Happened');
+        });
+  }
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -90,14 +179,11 @@ const ProfileScreen = ({navigation}) => {
             }}>
             {userInfo?.username}
           </Text>
-          <View
-            style={styles.passwordContainer2}>
+          <View style={styles.passwordContainer2}>
             <Text style={styles.inputBio}>{Bio}</Text>
           </View>
-          
         </View>
         <View style={styles.inputContainer}>
-          
           <View style={{display: 'flex', flexDirection: 'row', gap: 70}}>
             <View style={styles.passwordContainer}>
               <Text style={styles.textInputTitle}>Expertise:</Text>
@@ -141,9 +227,27 @@ const ProfileScreen = ({navigation}) => {
               Social Links
             </Text>
             <View style={{display: 'flex', gap: 20, flexDirection: 'row'}}>
-              <IonIcon.Button size={30} name="logo-github" color={'black'} />
-              <IonIcon size={30} name="logo-linkedin" color={'#0a66c2'} />
-              <IonIcon size={30} name="link-outline" color={'black'} />
+              <IonIcon.Button
+                style={{backgroundColor: '#fff'}}
+                onPress={handlePressGithub}
+                size={30}
+                name="logo-github"
+                color={'black'}
+              />
+              <IonIcon.Button
+                onPress={handlePressLinkedIn}
+                style={{backgroundColor: '#fff'}}
+                size={30}
+                name="logo-linkedin"
+                color={'#0a66c2'}
+              />
+              <IonIcon.Button
+                onPress={handlePressPortfolio}
+                style={{backgroundColor: '#fff'}}
+                size={30}
+                name="link-outline"
+                color={'black'}
+              />
             </View>
           </View>
           <View style={styles.buttonContainer}>
@@ -158,30 +262,72 @@ const ProfileScreen = ({navigation}) => {
           </View>
         </View>
       </View>
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={0}
+        snapPoints={snapPoints}
+        enablePanDownToClose={true}
+        handleIndicatorStyle={{backgroundColor: '#fff'}}
+        backgroundStyle={{backgroundColor: '#d3d3d3'}}
+        backdropComponent={renderBackdrop}>
+        <View style={styles.contentContainer}>
+          <Text>Enter Your {buttonName} Account</Text>
+          <TextInput
+            onChangeText={link => setLink(link)}
+            placeholder={`Enter your ${buttonName} link`}
+            style={{
+              borderWidth: 1,
+              borderColor: '#fff',
+              borderRadius: 10,
+              padding: 10,
+              opacity: 0.4,
+            }}
+          />
+          <TouchableOpacity
+            onPress={handleSaveLink}
+            style={{justifyContent: 'center', alignItems: 'center'}}>
+            <Text
+              style={{
+                color: 'white',
+                fontWeight: 'bold',
+                backgroundColor: '#24786D',
+                padding: 10,
+                paddingLeft: 30,
+                paddingRight: 30,
+              }}>
+              Save
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </BottomSheet>
       {Loading ? <Loader /> : null}
     </ScrollView>
   );
 };
 const styles = StyleSheet.create({
+  contentContainer: {
+    display: 'flex',
+    gap: 20,
+    padding: 10,
+  },
   passwordContainer: {
     display: 'flex',
     flexDirection: 'column',
     gap: 10,
     width: 150,
   },
-  passwordContainer2:{
+  passwordContainer2: {
     display: 'flex',
     flexDirection: 'column',
     gap: 10,
     width: 200,
-    paddingBottom:20,
+    paddingBottom: 20,
   },
 
   text: {
     color: '#24786D',
     fontWeight: '300',
     fontSize: 10,
-    
   },
   tabBarIcon: {},
   picStyle: {
@@ -197,7 +343,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
     backgroundColor: '#24786D',
-    paddingTop:20,
+    paddingTop: 20,
   },
   inputContainer: {
     display: 'flex',
@@ -217,7 +363,7 @@ const styles = StyleSheet.create({
   inputBio: {
     fontSize: 11,
     color: 'white',
-    fontWeight:'300',
+    fontWeight: '300',
   },
 
   moreInfoContainer: {
@@ -245,7 +391,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
-    height:750,
+    height: 750,
   },
   buttonContainer: {
     display: 'flex',

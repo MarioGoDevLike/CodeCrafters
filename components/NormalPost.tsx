@@ -126,6 +126,8 @@ const NormalPost = ({post}) => {
 const styles = StyleSheet.create({
   postContain: {
     display: 'flex',
+    width:360,
+
     gap: 10,
   },
   interaction: {
@@ -162,7 +164,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   postPic: {
-    width: 360,
+    width: 350,
     height: 240,
     borderRadius: 10,
     resizeMode: 'stretch',
