@@ -14,12 +14,11 @@ const Chat = ({route}) => {
 
   useEffect(() => {
     setLoading(true);
-    console.log(currentUserUid);
-    console.log(userId);
     const chatId =
-      currentUserUid === userId
-        ? userId + currentUserUid
-        : currentUserUid + userId;
+      currentUserUid > userId
+        ? currentUserUid + userId
+        : userId + currentUserUid;
+
     console.log(chatId);
     setChatId(chatId);
     const unSub = onSnapshot(doc(db, 'chats', chatId), doc => {
@@ -33,7 +32,7 @@ const Chat = ({route}) => {
   }, [userId, currentUserUid]);
 
   return (
-    <View style={{flex:1}}>
+    <View style={{flex: 1}}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={{flex: 1}}>
           <View style={styles.header}>

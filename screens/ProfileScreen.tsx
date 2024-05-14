@@ -6,6 +6,7 @@ import {
   ScrollView,
   Alert,
   Button,
+  Linking,
   Pressable,
 } from 'react-native';
 import React, {useEffect, useCallback, useMemo, useRef, useState} from 'react';
@@ -15,18 +16,24 @@ import {getDownloadURL, ref} from 'firebase/storage';
 import {auth, db, storage} from '../config/firebase';
 import {Image} from 'react-native-animatable';
 import {doc, onSnapshot} from 'firebase/firestore';
-import {clearUserEmail, getUserEmail} from '../components/RememberMe';
+import {clearUserEmail} from '../components/RememberMe';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import Loader from '../components/Loader';
 import BottomSheet, {BottomSheetBackdrop} from '@gorhom/bottom-sheet';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import firestore from '@react-native-firebase/firestore';
 
+
 const ProfileScreen = ({navigation}) => {
+  const [hasGithub, setHasGithub] = useState();
+  const [hasLinkedIn, setHasLinkedIn] = useState();
+  const [hasPortfolio, sethasPortfolio] = useState();
+
   const [buttonName, setButtonName] = useState('');
+  const [isVisible, setIsVisible] = useState(false);
   const [link, setLink] = useState('');
   const [uid, setUid] = useAtom(globalUid);
-  const snapPoints = useMemo(() => ['25%', '50%', '70%'], []);
+  const snapPoints = useMemo(() => ['40%'], []);
   const [url, setUrl] = useState('');
   const email = useAuth().user?.email;
   const [userInfo, setUserInfo] = useState<any | undefined>(null);
@@ -39,13 +46,7 @@ const ProfileScreen = ({navigation}) => {
   );
 
   const bottomSheetRef = useRef<BottomSheet>(null);
-  // const bottomSheetRef2 = useRef<BottomSheet>(null);
 
-  const handleClosePress = () => bottomSheetRef.current?.close();
-  const handleOpenPress = () => bottomSheetRef.current?.expand();
-  const handleCollapsePress = () => bottomSheetRef.current?.collapse();
-  const snapeToIndex = (index: number) =>
-    bottomSheetRef.current?.snapToIndex(index);
   const renderBackdrop = useCallback(
     (props: any) => (
       <BottomSheetBackdrop
@@ -67,6 +68,9 @@ const ProfileScreen = ({navigation}) => {
         setExpertise(docSnap.data()?.developmentExpertise);
         setRole(docSnap.data()?.role);
         setGender(docSnap.data()?.gender);
+        setHasGithub(docSnap.data()?.github);
+        setHasLinkedIn(docSnap.data()?.linkedIn);
+        sethasPortfolio(docSnap.data()?.portfolio);
         const bio =
           docSnap.data()?.bio ||
           'Just getting started. Excited to be a part of the community!';
@@ -80,6 +84,7 @@ const ProfileScreen = ({navigation}) => {
 
     return () => unsubscribe();
   };
+
   useEffect(() => {
     const storageRef = ref(storage, 'images/' + uid);
     getDownloadURL(storageRef).then(async (downloadURL: string) => {
@@ -103,14 +108,20 @@ const ProfileScreen = ({navigation}) => {
   const handlePressGithub = () => {
     bottomSheetRef.current?.expand();
     setButtonName('Github');
+    setIsVisible(true);
+    console.log(hasGithub);
   };
+
   const handlePressLinkedIn = () => {
     bottomSheetRef.current?.expand();
     setButtonName('LinkedIn');
+    setIsVisible(true);
   };
+
   const handlePressPortfolio = () => {
     bottomSheetRef.current?.expand();
     setButtonName('Portfolio');
+    setIsVisible(true);
   };
   
   const handleSaveLink = () => {
@@ -150,7 +161,7 @@ const ProfileScreen = ({navigation}) => {
           portfolio:link,
         })
         .then(res => {
-          Alert.alert('Database updated.');
+          Alert.alert('Your Link has been added!');
         })
         .catch(err => {
           console.log(err);
@@ -229,20 +240,20 @@ const ProfileScreen = ({navigation}) => {
             <View style={{display: 'flex', gap: 20, flexDirection: 'row'}}>
               <IonIcon.Button
                 style={{backgroundColor: '#fff'}}
-                onPress={handlePressGithub}
+                onPress={() => hasGithub? Linking.openURL(hasGithub):handlePressGithub()}
                 size={30}
                 name="logo-github"
                 color={'black'}
               />
               <IonIcon.Button
-                onPress={handlePressLinkedIn}
+                onPress={() => hasLinkedIn? Linking.openURL(hasLinkedIn):handlePressLinkedIn()}
                 style={{backgroundColor: '#fff'}}
                 size={30}
                 name="logo-linkedin"
                 color={'#0a66c2'}
               />
               <IonIcon.Button
-                onPress={handlePressPortfolio}
+                onPress={() => hasPortfolio? Linking.openURL(hasPortfolio):handlePressPortfolio()}
                 style={{backgroundColor: '#fff'}}
                 size={30}
                 name="link-outline"
@@ -262,7 +273,7 @@ const ProfileScreen = ({navigation}) => {
           </View>
         </View>
       </View>
-      <BottomSheet
+     {isVisible? <BottomSheet
         ref={bottomSheetRef}
         index={0}
         snapPoints={snapPoints}
@@ -271,10 +282,10 @@ const ProfileScreen = ({navigation}) => {
         backgroundStyle={{backgroundColor: '#d3d3d3'}}
         backdropComponent={renderBackdrop}>
         <View style={styles.contentContainer}>
-          <Text>Enter Your {buttonName} Account</Text>
+          <Text>Enter your {buttonName} account</Text>
           <TextInput
             onChangeText={link => setLink(link)}
-            placeholder={`Enter your ${buttonName} link`}
+            placeholder={`${buttonName} link`}
             style={{
               borderWidth: 1,
               borderColor: '#fff',
@@ -299,7 +310,7 @@ const ProfileScreen = ({navigation}) => {
             </Text>
           </TouchableOpacity>
         </View>
-      </BottomSheet>
+      </BottomSheet> : null}
       {Loading ? <Loader /> : null}
     </ScrollView>
   );
