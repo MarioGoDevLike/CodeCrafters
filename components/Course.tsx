@@ -19,6 +19,11 @@ const Course = ({image, title, description}) => {
 }
 
 const styles = StyleSheet.create({
+  imageContainer:{
+    display:'flex',
+    justifyContent:'center',
+    alignItems:'center'
+  },
     mainContainer:{
         display:'flex',
         flexDirection:'row',
@@ -26,21 +31,21 @@ const styles = StyleSheet.create({
         gap:15,
     },
     image:{
-        height:150,
+        height:90,
         width:150,
         resizeMode:'contain',
     },
     courseTitle:{
-        fontSize:20,
+        fontSize:15,
+        width:150,
         fontWeight:'bold',
         color:'black',
-        width:220,
     },
     courseDescription:{
         color:'black',
         fontWeight:'300',
-        fontSize:12,
-        width:230,
+        fontSize:10,
+        width:170,
     },
     textsContainer:{
         display:'flex',

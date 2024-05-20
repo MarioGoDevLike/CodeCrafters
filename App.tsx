@@ -26,6 +26,8 @@ import Search from './screens/Search';
 import SearchItem from './screens/SearchItem';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import CourseInfo from './components/CourseInfo';
+import CodeSnippetsComments from './components/CodeSnippetsComments';
+import VideoView from './components/VideoView';
 
 function App(): React.JSX.Element {
   const { user } = useAuth();
@@ -101,7 +103,7 @@ function App(): React.JSX.Element {
           <Stack.Screen
             name="Chat"
             component={Chat}
-            options={{ headerShown: false }}
+            options={{ headerShown: true }}
           />
           <Stack.Screen
             name="Search"
@@ -113,6 +115,17 @@ function App(): React.JSX.Element {
             component={CourseInfo}
             options={{ headerShown: true }}
           />
+          <Stack.Screen
+            name="VideoView"
+            component={VideoView}
+            options={{ headerShown: true, headerTitle:''}}
+          />
+          <Stack.Screen
+            name="CodeSnippetsComments"
+            component={CodeSnippetsComments}
+            options={{ headerShown: true, headerTitle:'' }}
+          />
+          
         </Stack.Navigator>
       </NavigationContainer>
     </ChatContextProvider>

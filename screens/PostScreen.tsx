@@ -30,6 +30,8 @@ const PostScreen = () => {
   const [title, setTitle] = useState('');
   const [normalPost, setNormalPost] = useState(false);
   const [votingPost, setVotingPost] = useState(false);
+  const [codeSnippet, setCodeSnippet] = useState(false);
+  const [userCode, setUserCode] = useState(null);
   const [image, setImage] = useState(null);
   const [userImage, setUserImage] = useState('');
   const [data, setAddData] = useState('');
@@ -55,11 +57,22 @@ const PostScreen = () => {
 
     launchImageLibrary(options, handleResponse);
   };
+  const handleCodeSnippetClick = () => {
+    setCodeSnippet(!codeSnippet);
+    if (!codeSnippet) {
+      setNormalPost(false);
+      setVotingPost(false);
+      setPostType('Code Snippet');
+    } else {
+      setPostType(null);
+    }
+  };
 
   const handleVotingPostClick = () => {
     setVotingPost(!votingPost);
     if (!votingPost) {
       setNormalPost(false);
+      setCodeSnippet(false);
       setPostType('Voting Post');
     } else {
       setPostType(null);
@@ -70,6 +83,7 @@ const PostScreen = () => {
     setNormalPost(!normalPost);
     if (!normalPost) {
       setVotingPost(false);
+      setCodeSnippet(false);
       setPostType('Normal Post');
     } else {
       setPostType(null);
@@ -133,12 +147,17 @@ const PostScreen = () => {
         userId: uid,
         postId: postId,
         postTitle: title,
-        postType: normalPost ? 'Normal Post' : 'Voting Post',
+        postType: codeSnippet
+          ? 'Code Snippet'
+          : normalPost
+          ? 'Normal Post'
+          : 'Voting Post',
+        codeSnippet: codeSnippet ? userCode: '', 
         postText: postText,
         postImage: userImage,
         time: timestamp,
       };
-      if (normalPost) {
+      if (normalPost || codeSnippet) {
         data = {
           ...data,
           Likes: '',
@@ -192,7 +211,7 @@ const PostScreen = () => {
           <Text style={styles.textPhone}>Post Type</Text>
           <View style={styles.checkboxContainer}>
             <CheckBox
-              style={{width: 150}}
+              style={{width: 100}}
               checkedCheckBoxColor="#24786D"
               rightTextStyle={styles.rightTextStyle}
               onClick={handleVotingPostClick}
@@ -200,7 +219,15 @@ const PostScreen = () => {
               rightText={'Voting post'}
             />
             <CheckBox
-              style={{width: 150}}
+              style={{width: 120}}
+              checkedCheckBoxColor="#24786D"
+              rightTextStyle={styles.rightTextStyle}
+              onClick={handleCodeSnippetClick}
+              isChecked={codeSnippet}
+              rightText={'Code Snippet'}
+            />
+            <CheckBox
+              style={{width: 100}}
               checkedCheckBoxColor="#24786D"
               rightTextStyle={styles.rightTextStyle}
               onClick={handleNormalPostClick}
@@ -209,30 +236,44 @@ const PostScreen = () => {
             />
           </View>
         </View>
-        <View style={styles.postContainer}>
-          <Image
-            style={styles.picStyle}
-            source={
-              url ? {uri: url} : require('../assets/images/emptyProfile.webp')
-            }
-          />
-          <TextInput
-            placeholder="Want to share something?"
-            placeholderTextColor={'#d4d4d4'}
-            value={postText}
-            onChangeText={value => setPostText(value)}
-            style={styles.defaultTextInput}
-            multiline={true}
-            numberOfLines={4}
-          />
+        <View style={{gap:10, paddingLeft:10, paddingRight:10,}}>
+          <View style={styles.postContainer}>
+            <Image
+              style={styles.picStyle}
+              source={
+                url ? {uri: url} : require('../assets/images/emptyProfile.webp')
+              }
+            />
+            <TextInput
+              placeholder="Want to share something?"
+              placeholderTextColor={'#d4d4d4'}
+              value={postText}
+              onChangeText={value => setPostText(value)}
+              style={styles.defaultTextInput}
+              multiline={true}
+              numberOfLines={4}
+            />  
+          </View>
+          {codeSnippet && (
+            <TextInput
+              placeholder="Paste your code here"
+              placeholderTextColor={'white'}
+              value={userCode}
+              onChangeText={value => setUserCode(value)}
+              style={styles.codeSnippetTextInput}
+              multiline={true}
+              numberOfLines={10}
+            />
+          )}
         </View>
-        <View>
+
+        {userImage ? <View>
           <Image
             source={{uri: userImage}}
             style={{height: 200, width: 200}}
             resizeMode="contain"
           />
-        </View>
+        </View>: null}
         <View style={styles.cameraContainer}>
           <Icon.Button
             onPress={openImagePicker}
@@ -253,6 +294,14 @@ const PostScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  codeSnippetTextInput: {
+    borderWidth: 1,
+    borderColor: '#d3d3d3',
+    backgroundColor: '#e3e3e3',
+    fontSize:10,
+    textAlignVertical:'top',
+    borderRadius:10,
+  },
   button: {
     backgroundColor: '#24786D',
     display: 'flex',
@@ -265,6 +314,7 @@ const styles = StyleSheet.create({
   checkboxContainer: {
     display: 'flex',
     flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   rightTextStyle: {
     color: 'black',
@@ -335,7 +385,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
-    paddingBottom: 20,
+    paddingBottom: 100,
   },
 });
 

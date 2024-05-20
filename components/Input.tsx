@@ -1,4 +1,4 @@
-import { View, TextInput, StyleSheet } from 'react-native';
+import { View, TextInput, StyleSheet, Dimensions } from 'react-native';
 import React, { useState } from 'react';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import { db } from '../config/firebase';
@@ -38,7 +38,7 @@ const Input = ({ chatId, userId }) => {
 
     setText("");
   };
-
+  
   return (
     <View style={styles.mainContainer}>
       <TextInput
@@ -57,11 +57,11 @@ const styles = StyleSheet.create({
       height:50,
       borderWidth: 1,
       borderColor: '#d3d3d3',
-      width: 300,
       backgroundColor: '#fff',
+      flex:1
     },
     mainContainer: {
-      display: 'flex',
+      width:Dimensions.get('window').width,
       flexDirection: 'row',
       alignItems: 'flex-end',
     },
@@ -70,7 +70,6 @@ const styles = StyleSheet.create({
       height: 50,
       flex:1,
       justifyContent:'center',
-      width:100,
       padding:10,
     },
     

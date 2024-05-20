@@ -5,6 +5,7 @@ import {collectionGroup, query, getDocs, onSnapshot} from 'firebase/firestore';
 import {db} from '../config/firebase';
 import NormalPost from '../components/NormalPost';
 import VotingPost from '../components/VotingPost';
+import CodeSnippetPost from '../components/CodeSnippetPost';
 
 const FeedScreen = () => {
   const [post, setPosts] = useState([]);
@@ -26,6 +27,7 @@ const FeedScreen = () => {
             const postDownVote = doc.data().Downvote;
             const postTime = doc.data().time;
             const postComments = doc.data().Comments;
+            const codeSnippet = doc.data().codeSnippet;
 0
 
             posts.push({
@@ -38,7 +40,8 @@ const FeedScreen = () => {
               postUpVote,
               postDownVote,
               postTime,
-              postComments
+              postComments,
+              codeSnippet
             });
           });
           setPosts(posts);
@@ -56,10 +59,13 @@ const FeedScreen = () => {
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={{display: 'flex', gap: 20, justifyContent:'center', alignItems:'center'}}>
         {post.map(item => {
+          console.log(item.codeSnippet);
           if (item.postType === 'Normal Post') {
             return <NormalPost key={item.postId} post={item} />;
-          } else {
+          } else if(item.postType === 'Voting Post') {
             return <VotingPost key={item.postId} post={item} />;
+          }else{
+            return <CodeSnippetPost key={item.postId} post={item}/>
           }
         })}
       </View>

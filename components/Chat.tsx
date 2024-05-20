@@ -1,17 +1,22 @@
 import {View, Text, StyleSheet, ScrollView} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useLayoutEffect, useState} from 'react';
 import {doc, onSnapshot} from 'firebase/firestore';
 import {db} from '../config/firebase';
 import Message from './Message';
 import Input from './Input';
 import Loader from './Loader';
 
-const Chat = ({route}) => {
+const Chat = ({route, navigation}) => {
   const {userId, currentUserUid, userUsername} = route.params;
   const [messages, setMessages] = useState([]);
   const [chatId, setChatId] = useState('');
   const [Loading, setLoading] = useState(false);
 
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: userUsername,
+    });
+  }, [navigation, userUsername]);
   useEffect(() => {
     setLoading(true);
     const chatId =
@@ -35,11 +40,7 @@ const Chat = ({route}) => {
     <View style={{flex: 1}}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={{flex: 1}}>
-          <View style={styles.header}>
-            <Text style={{paddingLeft: 10, color: 'black', fontWeight: '300'}}>
-              {userUsername}
-            </Text>
-          </View>
+          
           <View>
             {messages.map(m => (
               <Message message={m} key={m.id} />

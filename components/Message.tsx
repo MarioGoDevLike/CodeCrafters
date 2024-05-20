@@ -6,11 +6,16 @@ import {useAtom} from 'jotai';
 import {globalUid} from '../hooks/useAuth';
 import {doc, getDoc} from 'firebase/firestore';
 import {db} from '../config/firebase';
+import { formatDistanceToNow } from 'date-fns';
 
 const Message = ({message}) => {
   const [currentUser, setCurrentUser] = useAtom(globalUid);
   const [userPhotoUrl, setUserPhotoUrl] = useState('');
   const [senderPhotoUrl, setSenderPhotoUrl] = useState('');
+  
+  const timeAgo = formatDistanceToNow(new Date(message.date.toDate()), {
+    addSuffix: true,
+  });
 
   const fetchPhoto = async () => {
     try {
@@ -87,6 +92,7 @@ const Message = ({message}) => {
             }>
             {message.text}
           </Text>
+          <Text style={{fontSize:7,}}>{timeAgo}</Text>
         </View>
       </View>
     </View>
@@ -134,8 +140,9 @@ const styles = StyleSheet.create({
 
   },
   messageContent: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'center',
+    gap:10,
   },
 });
 

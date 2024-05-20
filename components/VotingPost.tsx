@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet, Pressable} from 'react-native';
+import {View, Text, StyleSheet, Pressable, TouchableOpacity} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {Image} from 'react-native-animatable';
 import AntIcon from 'react-native-vector-icons/AntDesign';
@@ -9,6 +9,7 @@ import firestore from '@react-native-firebase/firestore';
 import {useAtom} from 'jotai';
 import {globalUid} from '../hooks/useAuth';
 import {formatDistanceToNow} from 'date-fns';
+import axios from 'axios';
 
 const VotingPost = ({post}) => {
   const [url, setUrl] = useState();
@@ -41,7 +42,7 @@ const VotingPost = ({post}) => {
       setUpVote(true);
     }
     if (globaluid && post.postDownVote.includes(globaluid)) {
-      setUpVote(true);
+      setDownVote(true);
     }
   }, []);
 
@@ -63,8 +64,34 @@ const VotingPost = ({post}) => {
       Downvote: newDownVote,
     });
   };
-  const upVoteCount = post.postUpVote.length;
-  const downVoteCount = post.postDownVote.length;
+  const upVoteCount = post && post.postUpVote ? post.postUpVote.length : 0;
+const downVoteCount = post && post.postDownVote ? post.postDownVote.length : 0;
+
+  const [translatedText, setTranslatedText] = useState(null);
+  const [showTranslation, setShowTranslation] = useState(false);
+  const [showOriginal, setShowOriginal] = useState(true);
+
+  const API_KEY = "AIzaSyBl0jjxjNDG9aZBimhAQxc3UzcClevSXfY";
+
+  const translateText = async () => {
+    try {
+      const response = await axios.post(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`,
+        {
+          contents: [{ role: "user", parts: [{ text: `Translate this to English: ${post.postText}` }] }]
+        }
+      );
+      const translation = response.data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+      setTranslatedText(translation);
+      setShowTranslation(true);
+    } catch (error) {
+      console.error('Error translating text: ', error);
+    }
+  };
+
+  const toggleText = () => {
+    setShowOriginal(!showOriginal);
+  };
 
   return (
     <View style={styles.mainContainer}>
@@ -98,8 +125,18 @@ const VotingPost = ({post}) => {
       </View>
       <View style={styles.postContain}>
         <Text style={{fontSize: 12, fontWeight: '300', color: '#424242'}}>
-          {post.postText}
+          {showOriginal ? post.postText : translatedText}
         </Text>
+        {showTranslation && (
+          <TouchableOpacity onPress={toggleText} style={styles.translateButton}>
+            <Text style={styles.translateButtonText}>{showOriginal ? 'Show Translation' : 'Show Original'}</Text>
+          </TouchableOpacity>
+        )}
+        {!showTranslation && (
+          <TouchableOpacity onPress={translateText} style={styles.translateButton}>
+            <Text style={styles.translateButtonText}>See Translation</Text>
+          </TouchableOpacity>
+        )}
         {post.postImage ? (
           <Image style={styles.postPic} source={{uri: post.postImage}} />
         ) : null}
@@ -121,6 +158,7 @@ const VotingPost = ({post}) => {
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   postContain: {
     display: 'flex',
@@ -172,5 +210,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 10,
   },
+  translateButton: {
+    marginTop: 10,
+  },
+  translateButtonText: {
+    color: '#24786D',
+    fontSize: 10,
+    fontWeight: '300',
+  },
 });
+
 export default VotingPost;

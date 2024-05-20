@@ -1,18 +1,25 @@
-import { View, Text, StyleSheet, Pressable, TouchableOpacity } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { Image } from 'react-native-animatable';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  TouchableOpacity,
+} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {Image} from 'react-native-animatable';
 import IonIcon from 'react-native-vector-icons/Ionicons';
-import { getDownloadURL, ref } from 'firebase/storage';
-import { db, storage } from '../config/firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import {getDownloadURL, ref} from 'firebase/storage';
+import {db, storage} from '../config/firebase';
+import {doc, getDoc} from 'firebase/firestore';
 import firestore from '@react-native-firebase/firestore';
-import { useAtom } from 'jotai';
-import { globalUid } from '../hooks/useAuth';
-import { formatDistanceToNow } from 'date-fns';
-import { useNavigation } from '@react-navigation/native';
+import {useAtom} from 'jotai';
+import {globalUid} from '../hooks/useAuth';
+import {formatDistanceToNow} from 'date-fns';
+import {useNavigation} from '@react-navigation/native';
 import axios from 'axios';
+import {ScrollView} from 'react-native-gesture-handler';
 
-const NormalPost = ({ post }) => {
+const CodeSnippetPost = ({post}) => {
   const navigation = useNavigation();
   const [url, setUrl] = useState();
   const [liked, setLiked] = useState(false);
@@ -21,9 +28,10 @@ const NormalPost = ({ post }) => {
   const [translatedText, setTranslatedText] = useState(null);
   const [showTranslation, setShowTranslation] = useState(false);
   const [showOriginal, setShowOriginal] = useState(true);
+  const [formattedCode, setFormattedCode] = useState('');
+
 
   const uid = post.userId;
-  const likesCount = post.postLikes.length;
   const timeAgo = formatDistanceToNow(new Date(post.postTime.toDate()), {
     addSuffix: true,
   });
@@ -39,6 +47,7 @@ const NormalPost = ({ post }) => {
   };
 
   useEffect(() => {
+    formatCode();
     const storageRef = ref(storage, 'images/' + uid);
     getDownloadURL(storageRef).then(async downloadURL => {
       setUrl(downloadURL);
@@ -49,27 +58,43 @@ const NormalPost = ({ post }) => {
     }
   }, []);
 
-  const likePost = () => {
-    const newLikes = liked
-      ? post.postLikes.filter(id => id !== globaluid)
-      : [...post.postLikes, globaluid];
-    setLiked(!liked);
-    firestore().collection('posts').doc(post.postId).update({
-      postLikes: newLikes,
-    });
+
+  const API_KEY = 'AIzaSyBl0jjxjNDG9aZBimhAQxc3UzcClevSXfY';
+  const formatCode = async () => {
+    try {
+        const response = await axios.post(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`,
+            {
+              contents: [
+                {
+                  role: 'user',
+                  parts: [{text: `Format code without comments : ${post.codeSnippet}`}],
+                },
+              ],
+            },
+          );
+      const formattedCode =
+        response.data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      setFormattedCode(formattedCode);
+    } catch (error) {
+      console.error('Error formatting code: ', error);
+    }
   };
-
-  const API_KEY = "AIzaSyBl0jjxjNDG9aZBimhAQxc3UzcClevSXfY";
-
   const translateText = async () => {
     try {
       const response = await axios.post(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`,
         {
-          contents: [{ role: "user", parts: [{ text: `Translate this to English: ${post.postText}` }] }]
-        }
+          contents: [
+            {
+              role: 'user',
+              parts: [{text: `Translate this to English: ${post.postText}`}],
+            },
+          ],
+        },
       );
-      const translation = response.data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+      const translation =
+        response.data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
       setTranslatedText(translation);
       setShowTranslation(true);
     } catch (error) {
@@ -87,46 +112,58 @@ const NormalPost = ({ post }) => {
         <View style={styles.userDetails}>
           <Image
             style={styles.picStyle}
-            source={url ? { uri: url } : require('../assets/images/emptyProfile.webp')}
+            source={
+              url ? {uri: url} : require('../assets/images/emptyProfile.webp')
+            }
           />
           <Text style={styles.usernameText}>{userInfo?.username}</Text>
         </View>
         <Text style={styles.timeAgoText}>{timeAgo}</Text>
       </View>
       <View style={styles.postContain}>
-        <Text style={styles.postText}>{showOriginal ? post.postText : translatedText}</Text>
+        <Text style={styles.postText}>
+          {showOriginal ? post.postText : translatedText}
+        </Text>
         {showTranslation && (
           <TouchableOpacity onPress={toggleText} style={styles.translateButton}>
-            <Text style={styles.translateButtonText}>{showOriginal ? 'Show Translation' : 'Show Original'}</Text>
+            <Text style={styles.translateButtonText}>
+              {showOriginal ? 'Show Translation' : 'Show Original'}
+            </Text>
           </TouchableOpacity>
         )}
         {!showTranslation && (
-          <TouchableOpacity onPress={translateText} style={styles.translateButton}>
+          <TouchableOpacity
+            onPress={translateText}
+            style={styles.translateButton}>
             <Text style={styles.translateButtonText}>See Translation</Text>
           </TouchableOpacity>
         )}
+        <View
+          style={{backgroundColor: '#e3e3e3', marginLeft: 5, marginRight: 5, borderRadius:10,padding:10}}>
+          <ScrollView style={{maxHeight: 100}}>
+            <Text style={{fontSize: 10, fontWeight: '300', color: 'black'}}>
+            {formattedCode}
+            </Text>
+          </ScrollView>
+        </View>
         {post.postImage && (
-          <Image style={styles.postPic} source={{ uri: post.postImage }} />
+          <Image style={styles.postPic} source={{uri: post.postImage}} />
         )}
       </View>
       <View style={styles.interactionContainer}>
-        <Pressable onPress={likePost}>
-          <View style={styles.interaction}>
-            <IonIcon size={25} name={liked ? "heart" : "heart-outline"} />
-            <Text>{likesCount}</Text>
-          </View>
-        </Pressable>
         <Pressable
           onPress={() =>
-            navigation.navigate('Comments', {
+            navigation.navigate('CodeSnippetsComments', {
               postData: post,
               postId: post.postId,
               username: userInfo?.username,
-              userPic: url ? { uri: url } : require('../assets/images/emptyProfile.webp'),
+              userPic: url
+                ? {uri: url}
+                : require('../assets/images/emptyProfile.webp'),
               postTime: timeAgo,
+              postCode: formattedCode,
             })
-          }
-        >
+          }>
           <View style={styles.interaction}>
             <IonIcon size={25} name="chatbox-outline" />
             <Text>{post.postComments}</Text>
@@ -203,7 +240,8 @@ const styles = StyleSheet.create({
   interactionContainer: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    alignItems: 'center',
     gap: 20,
     padding: 10,
   },
@@ -213,4 +251,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NormalPost;
+export default CodeSnippetPost;

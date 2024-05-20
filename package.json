@@ -48,7 +48,10 @@
     "react-native-splash-screen": "^3.3.0",
     "react-native-tab-view": "^3.5.2",
     "react-native-uuid": "^2.0.2",
-    "react-native-vector-icons": "^10.0.3"
+    "react-native-vector-icons": "^10.0.3",
+    "react-native-video": "^6.0.0",
+    "react-native-webview": "^13.10.2",
+    "react-native-youtube": "^2.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

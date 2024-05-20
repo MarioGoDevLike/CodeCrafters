@@ -16,6 +16,7 @@ const MobileDevelopment = ({ navigation }) => {
               courseTitle: course.title,
               courseDescription: course.description,
               courseLearn: course.whatyoulearn,
+              courseId : course.Id,
             })
           }
         >
