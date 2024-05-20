@@ -22,6 +22,8 @@ const getIconName = (routeName: string) => {
     case 'Profile':
       iconName = 'person-outline';
       break;
+    case 'Courses':
+      iconName = 'book-outline';
   }
   return iconName;
 };

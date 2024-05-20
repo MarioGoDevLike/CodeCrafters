@@ -195,7 +195,7 @@ const Comments = ({route}) => {
           </View>
         </View>
         <View style={styles.postContain}>
-          <Text style={{fontSize: 12, fontWeight: '300', color: '#424242'}}>
+          <Text style={{fontSize: 12, fontWeight: '300', color: '#424242',}}>
             {postData.postText}
           </Text>
           {postData.postImage ? (

@@ -68,6 +68,7 @@ const SetupProfile = ({navigation}) => {
     }
   };
   const uploadImage = async (uri, fileType) => {
+    setLoading(true);
     const response = await fetch(uri);
     const blob = await response.blob();
     const storageRef = ref(storage, 'images/' + uid);
@@ -80,6 +81,7 @@ const SetupProfile = ({navigation}) => {
         getDownloadURL(uploadTask.snapshot.ref).then(async downloadURL => {
           console.log('File available at ', downloadURL);
           setUserImage(downloadURL);
+          setLoading(false);
           setImage('');
         });
       },

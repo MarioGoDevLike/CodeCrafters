@@ -15,10 +15,7 @@ import WelcomeScreen from './screens/WelcomeScreen';
 import useAuth from './hooks/useAuth';
 import HomeScreen from './screens/HomeScreen';
 import SetupProfile from './screens/SetupProfile';
-import MessageScreen from './screens/MessageScreen';
-import PostScreen from './screens/PostScreen';
-import NotificationScreen from './screens/notificationScreen';
-import ProfileScreen from './screens/ProfileScreen';
+
 import Comments from './screens/Comments';
 import messaging from '@react-native-firebase/messaging';
 import { ChatContextProvider } from './config/chatContext';
@@ -28,6 +25,7 @@ import EditProfile from './components/EditProfile';
 import Search from './screens/Search';
 import SearchItem from './screens/SearchItem';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import CourseInfo from './components/CourseInfo';
 
 function App(): React.JSX.Element {
   const { user } = useAuth();
@@ -50,7 +48,6 @@ function App(): React.JSX.Element {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-
     <ChatContextProvider>
       <NavigationContainer>
         <Stack.Navigator
@@ -109,6 +106,11 @@ function App(): React.JSX.Element {
           <Stack.Screen
             name="Search"
             component={Search}
+            options={{ headerShown: true }}
+          />
+          <Stack.Screen
+            name="CourseInfo"
+            component={CourseInfo}
             options={{ headerShown: true }}
           />
         </Stack.Navigator>

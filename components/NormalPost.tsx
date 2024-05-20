@@ -97,7 +97,7 @@ const NormalPost = ({post}) => {
       <View style={styles.interactionContainer}>
         <Pressable onPress={likePost}>
           <View style={styles.interaction}>
-            <IonIcon size={25} name="heart-outline" />
+            <IonIcon size={25} name={liked ? "heart" : "heart-outline"} />
             <Text>{likesCount}</Text>
           </View>
         </Pressable>

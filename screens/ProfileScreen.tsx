@@ -28,7 +28,6 @@ const ProfileScreen = ({navigation}) => {
   const [hasGithub, setHasGithub] = useState();
   const [hasLinkedIn, setHasLinkedIn] = useState();
   const [hasPortfolio, sethasPortfolio] = useState();
-
   const [buttonName, setButtonName] = useState('');
   const [isVisible, setIsVisible] = useState(false);
   const [link, setLink] = useState('');
@@ -61,7 +60,6 @@ const ProfileScreen = ({navigation}) => {
   const fetchData = async () => {
     setLoading(true);
     const docRef = doc(db, 'usersInfo', uid);
-
     const unsubscribe = onSnapshot(docRef, docSnap => {
       if (docSnap.exists()) {
         setUserInfo(docSnap.data());

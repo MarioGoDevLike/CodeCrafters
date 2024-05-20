@@ -2,7 +2,6 @@ import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IconIon from 'react-native-vector-icons/Ionicons';
-
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import MessageScreen from './MessageScreen';
 import PostScreen from './PostScreen';
@@ -10,6 +9,7 @@ import NotificationScreen from './NotificationScreen';
 import ProfileScreen from './ProfileScreen';
 import FeedScreen from './FeedScreen';
 import TabBar from '../components/TabBar';
+import Courses from './Courses';
 
 const HomeScreen = () => {
   const Home = createBottomTabNavigator();
@@ -51,10 +51,17 @@ const HomeScreen = () => {
         component={NotificationScreen}
       />
       <Home.Screen
+        name="Courses"
+        options={screenOptions}
+        component={Courses}
+      />
+      <Home.Screen
         name="Profile"
         options={screenOptions}
         component={ProfileScreen}
       />
+      
+
     </Home.Navigator>
   );
 };

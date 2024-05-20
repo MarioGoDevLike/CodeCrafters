@@ -66,7 +66,6 @@ const PostScreen = () => {
     }
   };
 
-
   const handleNormalPostClick = () => {
     setNormalPost(!normalPost);
     if (!normalPost) {
@@ -131,7 +130,7 @@ const PostScreen = () => {
     if (title && postText && postType) {
       const timestamp = firebase.firestore.FieldValue.serverTimestamp();
       let data = {
-        userId:uid,
+        userId: uid,
         postId: postId,
         postTitle: title,
         postType: normalPost ? 'Normal Post' : 'Voting Post',
@@ -170,6 +169,7 @@ const PostScreen = () => {
           console.log(error);
         });
     } else {
+      setLoading(false);
       Alert.alert('error');
     }
   };
@@ -198,7 +198,6 @@ const PostScreen = () => {
               onClick={handleVotingPostClick}
               isChecked={votingPost}
               rightText={'Voting post'}
-              
             />
             <CheckBox
               style={{width: 150}}
@@ -269,13 +268,13 @@ const styles = StyleSheet.create({
   },
   rightTextStyle: {
     color: 'black',
-    fontSize:10,
+    fontSize: 10,
     fontWeight: '300',
   },
 
   inputContainer: {
     display: 'flex',
-    gap:10,
+    gap: 10,
   },
   usernameInput1: {
     display: 'flex',

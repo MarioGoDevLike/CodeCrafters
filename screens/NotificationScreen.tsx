@@ -26,7 +26,7 @@ const NotificationScreen = () => {
         parts: [{ text: userInput }],
       },
     ];
-  
+    setUserInput('');
     setChat(updatedChat);
   
     try {
@@ -68,10 +68,11 @@ const NotificationScreen = () => {
  
   return (
     <View style={styles.container}>
-      <View style={{alignItems:'center', justifyContent:'center',height:60,}}>
-        <Text style={{fontSize:20, fontWeight:'bold', color:"black"}}>Chat BestFriend</Text>
+      <View style={{alignItems:'center', justifyContent:'center',height:60}}>
+        <Text style={{fontSize:20, fontWeight:'bold', color:"black"}}>Gemini</Text>
       </View>
       <FlatList
+       style={{paddingRight:10,paddingLeft:10,}}
         data={chat}
         renderItem={renderItem}
         keyExtractor={(item) => item.role + Math.random().toString()}
