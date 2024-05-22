@@ -108,9 +108,11 @@ const styles = StyleSheet.create({
   textLeft: {
     color: 'white',
     fontSize:12,
+    width:100,
   },
   textRight: {
     fontSize:12,
+    width:150,
   },
   MainContainerRight: {
     display: 'flex',

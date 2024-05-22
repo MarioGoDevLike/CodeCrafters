@@ -1,13 +1,16 @@
 import reactnative from '../assets/courses/reactNative.jpg';
 import nodeJs from '../assets/courses/NodeJs.jpg';
 import flutter from '../assets/courses/Flutter.jpg';
+import frontEnd from '../assets/courses/FrontEndWeb.jpg';
+import roadMap from '../assets/courses/roadmap.jpg';
 
 
-const courses = [
-    {
-      image: reactnative,
-      title: 'Learn React Native',
-      whatyoulearn: `\u00A0\u00A0\u00A0\u00A0 ⌨️ (0:00:00) Introduction
+
+const MobileCourses = [
+  {
+    image: reactnative,
+    title: 'Learn React Native',
+    whatyoulearn: `\u00A0\u00A0\u00A0\u00A0 ⌨️ (0:00:00) Introduction
       ⌨️ (0:01:25) What is React Native?
       ⌨️ (0:03:45) Expo
       ⌨️ (0:04:22) Setup with Expo
@@ -65,13 +68,14 @@ const courses = [
       ⌨️ (4:25:53) Creating the error screen
       ⌨️ (4:31:42) Some last refactoring
       ⌨️ (4:33:59) Bonus material`,
-      Id:'https://www.youtube.com/watch?v=obH0Po_RdWk',
-      description: 'Master React Native with this comprehensive course, covering everything from the basics of setup and components to advanced topics like navigation and fetching API data.',
-    },
-    {
-        image: nodeJs,
-      title: 'Learn Node.js - Full Tutorial for Beginners',
-      whatyoulearn: `\u00A0\u00A0\u00A0\u00A0
+    Id: 'https://www.youtube.com/watch?v=obH0Po_RdWk',
+    description:
+      'Master React Native with this comprehensive course, covering everything from the basics of setup and components to advanced topics like navigation and fetching API data.',
+  },
+  {
+    image: nodeJs,
+    title: 'Learn Node.js - Full Tutorial for Beginners',
+    whatyoulearn: `\u00A0\u00A0\u00A0\u00A0
       ⌨️ (0:00:00) Installing Nodejs
       ⌨️ (0:05:22) Working With Modules
       ⌨️ (0:14:40) The Events Module and EventEmitter Class
@@ -95,16 +99,17 @@ const courses = [
       ⌨️ (2:15:24) User Input Validation with JOI Validating Nested Object and Arrays
       ⌨️ (2:22:34) Getting Started With EJS Templates With Express
       ⌨️ (2:35:22) How does MiddleWare Work and Creating Custom Middleware
-      ⌨️ (2:42:49) Working With The Express Router`, 
-      Id:'https://www.youtube.com/watch?v=RLtyhwFtXQA',
-      description:`Node.js is an open-source, cross-platform JavaScript run-time environment that executes JavaScript code outside of a browser.`
-    },
-    {
-        title:'Flutter Course for Beginners',
-        description:'Learn how to use Flutter in this complete course for beginners. Flutter is an open-source UI software development kit used to create cross-platform applications for iOS, Android, Windows, Mac, and more. ',
-        image:flutter,
-      Id:'https://www.youtube.com/watch?v=VPvVD8t02U8',
-        whatyoulearn:`⌨️ (00:00:00) Introduction
+      ⌨️ (2:42:49) Working With The Express Router`,
+    Id: 'https://www.youtube.com/watch?v=RLtyhwFtXQA',
+    description: `Node.js is an open-source, cross-platform JavaScript run-time environment that executes JavaScript code outside of a browser.`,
+  },
+  {
+    title: 'Flutter Course for Beginners',
+    description:
+      'Learn how to use Flutter in this complete course for beginners. Flutter is an open-source UI software development kit used to create cross-platform applications for iOS, Android, Windows, Mac, and more. ',
+    image: flutter,
+    Id: 'https://www.youtube.com/watch?v=VPvVD8t02U8',
+    whatyoulearn: `⌨️ (00:00:00) Introduction
         ⌨️ (00:02:57) Developer Accounts
         ⌨️ (00:39:12) Setup
         ⌨️ (01:14:42) Introduction to Dart
@@ -157,8 +162,84 @@ const courses = [
         ⌨️ (33:50:07) Releasing our Android App
         ⌨️ (34:55:19) Localization in Flutter
         ⌨️ (36:33:57) Outro`,
-    },
-    
+  },
 ];
 
-export default courses;
+const webCourses = [
+  {Id:'https://www.youtube.com/watch?v=zJSY8tbf_ys',
+    title:'Learn Frontend Web Development Bootcamp Course',
+    whatyoulearn:`\u00A0\u00A0\u00A0\u00A0 ⌨️ (00:00:00) Introduction
+    ⌨️ (00:04:45) Your first JavaScript program
+    ⌨️ (00:28:14) What is JavaScript? 
+    ⌨️ (00:56:04) JavaScript variables
+    ⌨️ (01:45:28) Basic JavaScript challenges
+    ⌨️ (01:45:54) JavaScript operators
+    ⌨️ (02:39:10) 5 more JavaScript challenges
+    ⌨️ (02:50:09) JavaScript functions, conditionals, loops
+    ⌨️ (03:55:03) 25 Beginner JavaScript practice problems
+    ⌨️ (06:07:47) Built-in JavaScript methods
+    ⌨️ (06:25:46) Callback functions
+    ⌨️ (06:45:53) JavaScript primitives
+    ⌨️ (06:54:04) JavaScript Dates
+    ⌨️ (07:02:21) Regular Expressions
+    ⌨️ (07:25:01) JavaScript String methods
+    ⌨️ (07:40:45) JavaScript Array methods
+    ⌨️ (08:16:41) Math utilities with JavaScript
+    ⌨️ (08:23:11) Error types and other JavaScript concepts
+    ⌨️ (08:39:15) 10 Beginner / Intermediate JavaScript practice problems
+    ⌨️ (10:02:33) HTML Crash Course
+    ⌨️ (11:00:10) "About me page" HTML challenge
+    ⌨️ (11:02:51) Document Object Model (DOM)
+    ⌨️ (12:23:56) HTML + JavaScript "Meme Generator" challenge
+    ⌨️ (13:12:17) CSS Crash Course
+    ⌨️ (14:11:49) The CSS Box Model
+    ⌨️ (14:36:46) Most common CSS properties
+    ⌨️ (15:43:51) Frontend Mentor CSS "Pricing Card" challenge
+    ⌨️ (17:11:16) Introduction to responsive web design
+    ⌨️ (18:16:27) CSS Flexbox Crash Course
+    ⌨️ (19:40:45) Frontend Mentor CSS Flexbox "Testimonials" challenge
+    ⌨️ (21:13:27) Final thoughts and next steps
+    `,
+    image:frontEnd,
+    description:'Learn JavaScript, HTML, and CSS in this Frontend Web Development course. In this massive course, you will go from no coding experience to having the essential skills of a frontend web developer. You will learn various web development technologies and create a few projects along the way. '
+  },
+  {
+    image: nodeJs,
+    title: 'Learn Node.js - Full Tutorial for Beginners',
+    whatyoulearn: `\u00A0\u00A0\u00A0\u00A0
+⌨️ (0:00:00) Installing Nodejs
+⌨️ (0:05:22) Working With Modules
+⌨️ (0:14:40) The Events Module and EventEmitter Class
+⌨️ (0:22:32) Working With The ReadLine Module.
+⌨️ (0:34:36) Working With File System Module (Creating,Reading,Deleting,Renaming) Files
+⌨️ (0:45:04) Working With File System Module. Creating and Deleting Folders
+⌨️ (0:57:36) Working with Readable and Writable Streams
+⌨️ (1:02:40) Why you should use Streams
+⌨️ (1:05:41) Pipes and Pipe Chaining. (Readable,Writable and Transform Streams)
+⌨️ (1:12:36) Creating a Http Server using the Http Module
+⌨️ (1:17:52) Serving Static Files with Http and File System Module (html,json,image)
+⌨️ (1:24:30) Create our Package.json using Npm Init
+⌨️ (1:27:18) Installing Packages using Npm (Node Package Manager)
+⌨️ (1:32:23) Semantic Versioning
+⌨️ (1:36:42) Getting started with Express Web Framework
+⌨️ (1:40:48) Working with Express Http Get Request, Route Params and Query Strings
+⌨️ (1:49:52) Serving Static Files with Express
+⌨️ (1:54:36) Http Post Request with Express and Body Parser Module
+⌨️ (2:00:17) Working with JSON Data with Express and the Body Parser Module
+⌨️ (2:07:40) User Input Validation With Express And JOI
+⌨️ (2:15:24) User Input Validation with JOI Validating Nested Object and Arrays
+⌨️ (2:22:34) Getting Started With EJS Templates With Express
+⌨️ (2:35:22) How does MiddleWare Work and Creating Custom Middleware
+⌨️ (2:42:49) Working With The Express Router`,
+    Id: 'https://www.youtube.com/watch?v=RLtyhwFtXQA',
+    description: `Node.js is an open-source, cross-platform JavaScript run-time environment that executes JavaScript code outside of a browser.`,
+  },{
+    title:'Front End Developer Roadmap 2024',
+    description:'Learn what technologies you should learn first to become a front end web developer.',
+    Id:'https://www.youtube.com/watch?v=9He4UBLyk8Y',
+    whatyoulearn:`You'll learn the roadmap of becoming a FrontEnd Web Developper`,
+    image:roadMap,
+  }
+];
+
+export { MobileCourses, webCourses };

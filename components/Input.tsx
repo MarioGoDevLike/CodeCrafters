@@ -54,7 +54,7 @@ const Input = ({ chatId, userId }) => {
 
 const styles = StyleSheet.create({
     textInput: {
-      height:50,
+      height:60,
       borderWidth: 1,
       borderColor: '#d3d3d3',
       backgroundColor: '#fff',

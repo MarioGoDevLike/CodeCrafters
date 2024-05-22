@@ -2,12 +2,12 @@ import { View } from 'react-native';
 import React from 'react';
 import Course from '../components/Course';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import courses from '../components/allCourses';
+import {MobileCourses} from '../components/allCourses';
 
 const MobileDevelopment = ({ navigation }) => {
   return (
     <View>
-      {courses.map((course, index) => (
+      {MobileCourses.map((course, index) => (
         <TouchableOpacity
           key={index}
           onPress={() =>
@@ -19,7 +19,7 @@ const MobileDevelopment = ({ navigation }) => {
               courseId : course.Id,
             })
           }
-        >
+        >   
           <Course
             image={course.image}
             title={course.title}
